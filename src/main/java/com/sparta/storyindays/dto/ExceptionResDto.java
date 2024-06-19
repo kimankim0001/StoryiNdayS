@@ -1,18 +1,14 @@
 package com.sparta.storyindays.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommonResDto<T> {
-
-    private int statusCode;
+public class ExceptionResDto {
+    private int status;
     private String message;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private T data;
-
 }
