@@ -8,6 +8,7 @@ import com.sparta.storyindays.dto.post.PostUpdateResDto;
 import com.sparta.storyindays.entity.Post;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.enums.post.PostType;
+import com.sparta.storyindays.exception.BusinessLogicException;
 import com.sparta.storyindays.jwt.JwtProvider;
 import com.sparta.storyindays.repository.PostRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,10 +51,10 @@ public class PostService {
         return postGetResDto;
     }
 
-    public PostGetResDto getUserPost(User user, int page, boolean isAsc) {
+    public PostGetResDto getUserPost(String userName, int page, boolean isAsc) {
         Pageable pageable = getPageable(page, isAsc);
 
-        User tempUser = userService.findById(user.getId());
+        User tempUser = userService.findByUserName(userName);
 
         PostGetResDto postGetResDto = new PostGetResDto(postRepository.findAllByPostType(PostType.NOTICE)
                 , postRepository.findAllByPostTypeAndIsPinned(PostType.NORMAL, true)
@@ -62,7 +63,6 @@ public class PostService {
         postGetResDto.inputTestData();
         return postGetResDto;
     }
-
 
     @Transactional
     public PostUpdateResDto updatePost(long postId, PostReqDto reqDto, HttpServletRequest request, User user) {
@@ -73,7 +73,7 @@ public class PostService {
         Post post = findById(postId);
         if(!post.getUser().getUsername().equals(curUser.getUsername()))
         {
-            throw new IllegalArgumentException("본인이 작성한 게시글만 삭제할수 있습니다");
+            throw new BusinessLogicException("본인이 작성한 게시글만 수정할 수 있습니다");
         }
 
         post.update(reqDto);
@@ -87,14 +87,14 @@ public class PostService {
         Post post = findById(postId);
         if(!post.getUser().getUsername().equals(curUser.getUsername()))
         {
-            throw new IllegalArgumentException("본인이 작성한 게시글만 삭제할수 있습니다");
+            throw new BusinessLogicException("본인이 작성한 게시글만 삭제할 수 있습니다");
         }
         postRepository.delete(post);
     }
 
     public Post findById(long id) {
         return postRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않는 id입니다"));
+                new IllegalArgumentException("존재하지 않는 게시글 입니다"));
     }
 
     private Pageable getPageable(int page, boolean isAsc) {
@@ -119,7 +119,6 @@ public class PostService {
         if(!jwtTokenUserName.equals(inputUser.getUsername())){
             throw new IllegalArgumentException("유효한 유저가 아닙니다");
         }
-
         return inputUser;
     }
 }
