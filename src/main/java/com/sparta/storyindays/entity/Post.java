@@ -1,4 +1,51 @@
 package com.sparta.storyindays.entity;
 
-public class Post extends Timstamped{
+import com.sparta.storyindays.enums.post.PostType;
+import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@NoArgsConstructor
+@Table(name = "post")
+public class Post extends Timstamped {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(name = "title", nullable = false, length = 255)
+    private String title;
+
+    @Column(name = "contents", nullable = false, length = 255)
+    private String contents;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "post_type", nullable = false, length = 255)
+    private PostType postType;
+
+    @Column(name = "is_pinned", nullable = false)
+    private Boolean isPinned;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+//    @OneToMany
+//    private Comment comment;
+
+    @Builder
+    public Post(String title, String contents, boolean isPinned, PostType postType, User user) {
+        this.title = title;
+        this.contents = contents;
+        this.isPinned = isPinned;
+        this.postType = postType;
+        this.user = user;
+    }
+
+    public void setPin() {
+        isPinned = true;
+    }
 }
