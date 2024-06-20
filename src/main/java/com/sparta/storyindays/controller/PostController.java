@@ -1,6 +1,5 @@
 package com.sparta.storyindays.controller;
 
-import com.sparta.storyindays.config.JwtConfig;
 import com.sparta.storyindays.dto.CommonResDto;
 import com.sparta.storyindays.dto.post.PostGetResDto;
 import com.sparta.storyindays.dto.post.PostReqDto;

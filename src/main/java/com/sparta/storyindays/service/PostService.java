@@ -29,13 +29,14 @@ public class PostService {
     public PostResDto writePost(PostReqDto reqDto, HttpServletRequest request, User user) {
         // 유효한 JWT 토큰을 체크 jwtProvider
         String accessToken = request.getHeader(JwtConfig.AUTHORIZATION_HEADER);
+        accessToken = jwtProvider.substringToken(accessToken);
         jwtProvider.isTokenValidate(accessToken, request);
         // 입력받은 유저를 레포지토리에서 찾아옴
         User inputUser = userService.findById(user.getId());
         // jwt토큰의 유저정보와 입력받은 유저정보 비교
         String jwtTokenUserName = jwtProvider.getUserInfoFromToken(accessToken).getSubject();
 
-        if(!jwtTokenUserName.equals(inputUser.getName())){
+        if(!jwtTokenUserName.equals(inputUser.getUsername())){
             throw new IllegalArgumentException("인가된 유저가 아닙니다");
         }
 
