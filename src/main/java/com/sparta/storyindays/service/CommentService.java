@@ -2,6 +2,7 @@ package com.sparta.storyindays.service;
 
 import com.sparta.storyindays.dto.comment.CommentCreateReqDto;
 import com.sparta.storyindays.dto.comment.CommentResDto;
+import com.sparta.storyindays.dto.comment.CommentUpdateReqDto;
 import com.sparta.storyindays.entity.Comment;
 import com.sparta.storyindays.entity.Post;
 import com.sparta.storyindays.entity.User;
@@ -37,4 +38,30 @@ public class CommentService {
         List<Comment> comments = commentRepository.findAll();
         return comments.stream().sorted(Comparator.comparing(Comment::getCreatedAt).reversed()).map(CommentResDto::toDto).toList();
     }
+
+    //댓글 수정
+    @Transactional
+    public CommentResDto updateComment(long postId, long commentId, CommentUpdateReqDto reqDto, User user) {
+
+        postService.findById(postId);
+        Comment comment = findComment(commentId);
+        String loginUsername = user.getUsername();
+        String commentUsername = comment.getUser().getUsername();
+
+        if (!loginUsername.equals(commentUsername)) {
+            throw new IllegalArgumentException("댓글 작성자와 현재 사용자가 불일치합니다.");
+        }
+
+        comment.updateComment(reqDto.getComment());
+
+        return CommentResDto.toDto(comment);
+    }
+
+    public Comment findComment(long commentId) {
+
+        return commentRepository.findById(commentId).orElseThrow(
+                () -> new IllegalArgumentException("해당 ID에 맞는 댓글이 없습니다."));
+    }
+
+
 }
