@@ -1,6 +1,7 @@
 package com.sparta.storyindays.repository;
 
 import com.sparta.storyindays.entity.Post;
+import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.enums.post.PostType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,5 +16,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findAllByPostTypeAndIsPinned(PostType postType, boolean isPinned, Pageable pageable);
 
-    //Page<Post> findAllByPostTypeAndIsPinnedAndUser(PostType postType, boolean b, Pageable pageable, User user);
+    Page<Post> findAllByPostTypeAndIsPinnedAndUser(PostType postType, boolean b, User user, Pageable pageable);
 }
