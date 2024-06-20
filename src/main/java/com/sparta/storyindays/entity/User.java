@@ -1,6 +1,7 @@
 package com.sparta.storyindays.entity;
 
 import com.sparta.storyindays.dto.user.Auth;
+import com.sparta.storyindays.dto.user.ProfileUpdateReqDto;
 import com.sparta.storyindays.dto.user.State;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -48,5 +49,10 @@ public class User extends Timstamped {
         this.name = name;
         this.auth = auth;
         this.email = email;
+    }
+
+    public void update(ProfileUpdateReqDto profileUpdateReqDto) {
+        this.name = profileUpdateReqDto.getName();
+        this.introduction = profileUpdateReqDto.getInstroduction();
     }
 }
