@@ -4,8 +4,10 @@ import com.sparta.storyindays.config.JwtConfig;
 import com.sparta.storyindays.dto.user.Auth;
 import com.sparta.storyindays.dto.user.LoginReqDto;
 import com.sparta.storyindays.dto.user.SignupReqDto;
+import com.sparta.storyindays.entity.PasswordHistory;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.jwt.JwtProvider;
+import com.sparta.storyindays.repository.PasswordHistoryRepository;
 import com.sparta.storyindays.repository.UserRepository;
 import com.sparta.storyindays.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ import java.util.Locale;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final PasswordHistoryRepository passwordHistoryRepository;
     private final PasswordEncoder passwordEncoder;
     private final MessageSource messageSource;
     private final AuthenticationManager authenticationManager;
@@ -52,6 +55,11 @@ public class AuthService {
 
         userRepository.save(user);
 
+        //회원가입시 비밀번호가 히스토리에 저장
+        PasswordHistory newHistory = new PasswordHistory();
+        newHistory.setUser(user);
+        newHistory.setPassword(user.getPassword());
+        passwordHistoryRepository.save(newHistory);
     }
 
     @Transactional
