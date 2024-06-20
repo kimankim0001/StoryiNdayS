@@ -10,8 +10,4 @@ public class ProfileUpdateReqDto {
     private String name;
 
     private String instroduction;
-
-    private String currentPassword;
-
-    private String newPassword;
 }

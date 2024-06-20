@@ -24,7 +24,7 @@ public class CommentController {
     //댓글 작성
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<CommonResDto<CommentResDto>> createComment(@PathVariable(name = "postId") long postId, @Valid @RequestBody CommentCreateReqDto reqDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        CommentResDto resDto = commentService.createComment(postId, reqDto, userDetails.getUser);
+        CommentResDto resDto = commentService.createComment(postId, reqDto, userDetails.getUser());
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value(), "댓글 작성에 성공하였습니다!", resDto));
     }
 
@@ -34,5 +34,4 @@ public class CommentController {
         List<CommentResDto> resDto = commentService.getAllComment(postId);
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value(), "댓글 조회에 성공하였습니다!", resDto));
     }
-
 }
