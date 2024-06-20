@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "Comment")
+@Table(name = "comment")
 @NoArgsConstructor
 public class Comment extends Timstamped {
 
@@ -19,17 +19,21 @@ public class Comment extends Timstamped {
     private String comment;
 
     @ManyToOne
-    @JoinColumn(name = "Post_id", nullable = false)
+    @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
     @ManyToOne
-    @JoinColumn(name = "User_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     public Comment(String comment, Post post, User user) {
         this.comment = comment;
         this.post = post;
         this.user = user;
+    }
+
+    public void updateComment(String comment) {
+        this.comment = comment;
     }
 
 

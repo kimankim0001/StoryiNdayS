@@ -25,10 +25,10 @@ public class PostGetResDto {
     }
 
     public void inputTestData() {
-        for(int i=0; i<2; i++) {
+        for (int i = 0; i < 2; i++) {
             PostUpdateResDto testDto = new PostUpdateResDto();
-            testDto.setTitle("testNoti" + i+1);
-            testDto.setContents("testContents" + i+1);
+            testDto.setTitle("testNoti" + i + 1);
+            testDto.setContents("testContents" + i + 1);
             testDto.setCreateAt(LocalDateTime.now());
             testDto.setModifiedAt(LocalDateTime.now());
             testDto.setPostType(PostType.NOTICE);
@@ -36,10 +36,10 @@ public class PostGetResDto {
             noticePostList.add(testDto);
         }
 
-        for(int i=0; i<2; i++) {
+        for (int i = 0; i < 2; i++) {
             PostUpdateResDto testDto2 = new PostUpdateResDto();
-            testDto2.setTitle("testTop" + i+1);
-            testDto2.setContents("testContents" + i+1);
+            testDto2.setTitle("testTop" + i + 1);
+            testDto2.setContents("testContents" + i + 1);
             testDto2.setCreateAt(LocalDateTime.now());
             testDto2.setModifiedAt(LocalDateTime.now());
             testDto2.setPostType(PostType.NORMAL);
