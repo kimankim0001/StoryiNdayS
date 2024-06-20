@@ -1,13 +1,11 @@
 package com.sparta.storyindays.entity;
 
-import com.sparta.storyindays.dto.user.Auth;
-import com.sparta.storyindays.dto.user.PasswordUpdateReqDto;
+import com.sparta.storyindays.enums.user.Auth;
 import com.sparta.storyindays.dto.user.ProfileUpdateReqDto;
-import com.sparta.storyindays.dto.user.State;
+import com.sparta.storyindays.enums.user.State;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter

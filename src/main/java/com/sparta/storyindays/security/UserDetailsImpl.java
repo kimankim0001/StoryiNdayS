@@ -1,6 +1,6 @@
 package com.sparta.storyindays.security;
 
-import com.sparta.storyindays.dto.user.State;
+import com.sparta.storyindays.enums.user.State;
 import com.sparta.storyindays.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

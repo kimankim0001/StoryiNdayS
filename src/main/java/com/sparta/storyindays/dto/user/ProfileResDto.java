@@ -1,6 +1,8 @@
 package com.sparta.storyindays.dto.user;
 
 import com.sparta.storyindays.entity.User;
+import com.sparta.storyindays.enums.user.Auth;
+import com.sparta.storyindays.enums.user.State;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,4 +1,4 @@
-package com.sparta.storyindays.dto.user;
+package com.sparta.storyindays.enums.user;
 
 public enum State {
     ACTIVATION(UserStateType.ACTIVATION),

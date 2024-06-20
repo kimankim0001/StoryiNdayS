@@ -1,9 +1,7 @@
 package com.sparta.storyindays.config;
 
 import com.sparta.storyindays.jwt.JwtProvider;
-import com.sparta.storyindays.security.AuthenticationEntryPointImpl;
-import com.sparta.storyindays.security.JwtAuthenticationFilter;
-import com.sparta.storyindays.security.UserDetailsServiceImpl;
+import com.sparta.storyindays.security.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +14,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -25,6 +25,9 @@ public class SecurityConfig {
     private final JwtProvider jwtProvider;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationEntryPointImpl authenticationEntryPointImpl;
+    private final AccessDeniedHandlerImpl accessDeniedHandlerImpl;
+    private final LogoutHandlerImpl logoutHandlerImpl;
+    private final LogoutSuccessHandlerImpl logoutSuccessHandlerImpl;
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
@@ -53,13 +56,23 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/posts/{userId}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/posts").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/reissuance").permitAll()
                         .requestMatchers("/api/admins/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/admins/posts/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
 
         );
 
-        http.exceptionHandling(e -> e.authenticationEntryPoint(authenticationEntryPointImpl));
+        http.logout(logout -> logout
+                .logoutUrl("/api/users/logout")
+                .addLogoutHandler(logoutHandlerImpl)
+                .logoutSuccessHandler(logoutSuccessHandlerImpl)
+        );
+
+
+        http.exceptionHandling(e -> e
+                .authenticationEntryPoint(authenticationEntryPointImpl)
+                .accessDeniedHandler(accessDeniedHandlerImpl));
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
