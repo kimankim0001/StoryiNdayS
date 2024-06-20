@@ -3,10 +3,12 @@ package com.sparta.storyindays.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Table(name = "Comment")
+@NoArgsConstructor
 public class Comment extends Timstamped {
 
     @Id
