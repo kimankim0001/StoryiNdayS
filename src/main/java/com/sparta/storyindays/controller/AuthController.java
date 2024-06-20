@@ -27,10 +27,10 @@ public class AuthController {
         return ResponseEntity.ok().body(resDto);
     }
 
-    @PostMapping("/users/login")
-    public ResponseEntity<CommonResDto<Void>> login(@Valid @RequestBody LoginReqDto loginReqDto) {
-        authService.login(loginReqDto);
-        CommonResDto resDto = new CommonResDto(HttpStatus.OK.value(), "로그인이 완료되었습니다 !", null);
-        return ResponseEntity.ok().body(resDto);
-    }
+//    @PostMapping("/users/login")
+//    public ResponseEntity<CommonResDto<Void>> login(@Valid @RequestBody LoginReqDto loginReqDto) {
+//        authService.login(loginReqDto);
+//        CommonResDto resDto = new CommonResDto(HttpStatus.OK.value(), "로그인이 완료되었습니다 !", null);
+//        return ResponseEntity.ok().body(resDto);
+//    }
 }

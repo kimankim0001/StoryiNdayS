@@ -22,7 +22,7 @@ public class UserController {
     public ResponseEntity<CommonResDto<ProfileResDto>> getProfile(@PathVariable Long userId) {
         ProfileResDto responseDto = userService.getProfile(userId);
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
-                , "게시물 작성에 성공했습니다!"
+                , "프로필 조회에 성공하였습니다!"
                 , responseDto));
     }
 }
