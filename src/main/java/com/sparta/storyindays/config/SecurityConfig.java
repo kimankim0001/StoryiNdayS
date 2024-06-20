@@ -1,7 +1,9 @@
 package com.sparta.storyindays.config;
 
 import com.sparta.storyindays.jwt.JwtProvider;
+import com.sparta.storyindays.security.AuthenticationEntryPointImpl;
 import com.sparta.storyindays.security.JwtAuthenticationFilter;
+import com.sparta.storyindays.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,10 +23,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final AuthenticationEntryPointImpl authenticationEntryPointImpl;
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        return new JwtAuthenticationFilter(jwtProvider);
+        return new JwtAuthenticationFilter(jwtProvider,userDetailsService);
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
     }
 
     @Bean
@@ -48,7 +57,7 @@ public class SecurityConfig {
 
         );
 
-
+        http.exceptionHandling(e -> e.authenticationEntryPoint(authenticationEntryPointImpl));
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 

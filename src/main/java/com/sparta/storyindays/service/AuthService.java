@@ -1,5 +1,6 @@
 package com.sparta.storyindays.service;
 
+import com.sparta.storyindays.config.JwtConfig;
 import com.sparta.storyindays.config.SecurityConfig;
 import com.sparta.storyindays.dto.user.Auth;
 import com.sparta.storyindays.dto.user.LoginReqDto;
@@ -69,8 +70,8 @@ public class AuthService {
 
             User user = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
 
-            String accessToken = jwtProvider.createToken(user,"accessToken");
-            String refreshToken = jwtProvider.createToken(user, "refreshToken");
+            String accessToken = jwtProvider.createToken(user, JwtConfig.accessTokenTime);
+            String refreshToken = jwtProvider.createToken(user, JwtConfig.refreshTokenTime);
 
             user.updateRefreshToken(refreshToken);
             log.info("로그인 완료");
