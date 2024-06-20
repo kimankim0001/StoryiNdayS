@@ -88,4 +88,11 @@ public class PostService {
         return postRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않는 id입니다"));
     }
+
+    public void deletePost(long postId) {
+        // 유저 확인 인가
+
+        Post post = findById(postId);
+        postRepository.delete(post);
+    }
 }

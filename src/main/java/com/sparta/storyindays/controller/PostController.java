@@ -1,5 +1,6 @@
 package com.sparta.storyindays.controller;
 
+import com.oracle.svm.core.annotate.Delete;
 import com.sparta.storyindays.dto.CommonResDto;
 import com.sparta.storyindays.dto.post.PostGetResDto;
 import com.sparta.storyindays.dto.post.PostReqDto;
@@ -58,5 +59,14 @@ public class PostController {
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
                 , "게시물 수정에 성공했습니다!"
                 , updateResDto));
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<CommonResDto<Void>> deletePost(@PathVariable long postId){
+
+        postService.deletePost(postId);
+        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
+                , "게시물 삭제에 성공했습니다!" ,
+                null));
     }
 }
