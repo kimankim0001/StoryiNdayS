@@ -36,7 +36,7 @@ public class User extends Timstamped {
     private State state = State.ACTIVATION;
 
     @Column(name = "refresh_token", nullable = false)
-    private String refresh_token = "";
+    private String refreshToken = "";
 
     @Enumerated(EnumType.STRING)
     @Column(name = "auth", nullable = false)
@@ -51,6 +51,10 @@ public class User extends Timstamped {
         this.name = name;
         this.auth = auth;
         this.email = email;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
     public void update(ProfileUpdateReqDto profileUpdateReqDto) {
