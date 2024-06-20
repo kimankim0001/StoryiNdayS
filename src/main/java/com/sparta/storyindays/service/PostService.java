@@ -27,22 +27,9 @@ public class PostService {
     private final JwtProvider jwtProvider;
 
     public PostResDto writePost(PostReqDto reqDto, HttpServletRequest request, User user) {
-        // 유효한 JWT 토큰을 체크 jwtProvider
-        String accessToken = request.getHeader(JwtConfig.AUTHORIZATION_HEADER);
-        accessToken = jwtProvider.substringToken(accessToken);
-        jwtProvider.isTokenValidate(accessToken, request);
-        // 입력받은 유저를 레포지토리에서 찾아옴
-        User inputUser = userService.findById(user.getId());
-        // jwt토큰의 유저정보와 입력받은 유저정보 비교
-        String jwtTokenUserName = jwtProvider.getUserInfoFromToken(accessToken).getSubject();
 
-        if(!jwtTokenUserName.equals(inputUser.getUsername())){
-            throw new IllegalArgumentException("인가된 유저가 아닙니다");
-        }
-
-        // req, 찾아온 user로 게시글 entity 생성
-        Post post = postRepository.save(reqDto.toPostEntity(inputUser));
-        // save 후 res dto로 반환
+        User curUser = validUserCheckAndGetUser(request,user);
+        Post post = postRepository.save(reqDto.toPostEntity(curUser));
         PostResDto postReqDto = new PostResDto(post);
 
         return postReqDto;
@@ -66,7 +53,6 @@ public class PostService {
     public PostGetResDto getUserPost(User user, int page, boolean isAsc) {
         Pageable pageable = getPageable(page, isAsc);
 
-        // 유저를 레포지토리에서 찾아옴
         User tempUser = userService.findById(user.getId());
 
         PostGetResDto postGetResDto = new PostGetResDto(postRepository.findAllByPostType(PostType.NOTICE)
@@ -77,7 +63,41 @@ public class PostService {
         return postGetResDto;
     }
 
-    public Pageable getPageable(int page, boolean isAsc) {
+
+    @Transactional
+    public PostUpdateResDto updatePost(long postId, PostReqDto reqDto, HttpServletRequest request, User user) {
+
+        // 본인이 작성한 게시글의 수정인 경우만 인가하도록 조건걸기
+        User curUser = validUserCheckAndGetUser(request,user);
+
+        Post post = findById(postId);
+        if(!post.getUser().getUsername().equals(curUser.getUsername()))
+        {
+            throw new IllegalArgumentException("본인이 작성한 게시글만 삭제할수 있습니다");
+        }
+
+        post.update(reqDto);
+        return new PostUpdateResDto(post);
+    }
+
+    public void deletePost(long postId, HttpServletRequest request, User user) {
+
+        User curUser = validUserCheckAndGetUser(request,user);
+
+        Post post = findById(postId);
+        if(!post.getUser().getUsername().equals(curUser.getUsername()))
+        {
+            throw new IllegalArgumentException("본인이 작성한 게시글만 삭제할수 있습니다");
+        }
+        postRepository.delete(post);
+    }
+
+    public Post findById(long id) {
+        return postRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("존재하지 않는 id입니다"));
+    }
+
+    private Pageable getPageable(int page, boolean isAsc) {
         // 정렬방향, 정렬 기준(생성일자 고정), 페이저블 생성
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, "createdAt");
@@ -86,24 +106,20 @@ public class PostService {
         return pageable;
     }
 
-    @Transactional
-    public PostUpdateResDto updatePost(long postId, PostReqDto reqDto) {
+    private User validUserCheckAndGetUser (HttpServletRequest request, User user) {
+        // 유효한 JWT 토큰을 체크 jwtProvider
+        String accessToken = request.getHeader(JwtConfig.AUTHORIZATION_HEADER);
+        accessToken = jwtProvider.substringToken(accessToken);
+        jwtProvider.isTokenValidate(accessToken, request);
+        String jwtTokenUserName = jwtProvider.getUserInfoFromToken(accessToken).getSubject();
+        // 입력받은 유저를 레포지토리에서 찾아옴
+        User inputUser = userService.findById(user.getId());
 
-        // 본인이 작성한 게시글의 수정인 경우만 인가하도록 조건걸기
-        Post post = findById(postId);
-        post.update(reqDto);
-        return new PostUpdateResDto(post);
-    }
+        // jwt토큰의 유저정보와 입력받은 유저정보 비교.. 구지 필요한지 고민
+        if(!jwtTokenUserName.equals(inputUser.getUsername())){
+            throw new IllegalArgumentException("유효한 유저가 아닙니다");
+        }
 
-    public Post findById(long id) {
-        return postRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않는 id입니다"));
-    }
-
-    public void deletePost(long postId) {
-        // 유저 확인 인가
-
-        Post post = findById(postId);
-        postRepository.delete(post);
+        return inputUser;
     }
 }
