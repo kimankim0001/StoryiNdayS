@@ -26,5 +26,5 @@ public class SignupReqDto {
     private String email;
 
     @NotNull(message = "auth 값이 필수로 들어있어야 합니다.")
-    private Auth auth;
+    private Auth authType;
 }

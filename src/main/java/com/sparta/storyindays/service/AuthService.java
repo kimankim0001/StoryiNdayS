@@ -25,7 +25,7 @@ public class AuthService {
         String username = signupReqDto.getUsername();
         String password = passwordEncoder.encode(signupReqDto.getPassword());
         String name = signupReqDto.getName();
-        Auth auth = signupReqDto.getAuth();
+        Auth auth = signupReqDto.getAuthType();
         String email = signupReqDto.getEmail();
 
         if (userRepository.findByUsername(signupReqDto.getName()).isPresent()) {
