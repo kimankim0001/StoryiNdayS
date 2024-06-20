@@ -59,10 +59,19 @@ public class UserService {
 
         // 변경할 비밀번호로 수정
         user.passwordUpdate(passwordEncoder.encode(newPassword));
+
+        // 변경한 비밀번호 히스토리에 저장
         PasswordHistory newHistory = new PasswordHistory();
         newHistory.setUser(user);
         newHistory.setPassword(user.getPassword());
         passwordHistoryRepository.save(newHistory);
+
+        // 비밀번호 히스토리가 3개를 초과할 경우 가장 오래된 히스토리 삭제
+        List<PasswordHistory> allPasswords = passwordHistoryRepository.findAllByUserOrderByChangedAtAsc(user);
+        if (allPasswords.size() > 3) {
+            PasswordHistory oldestHistory = allPasswords.get(0);
+            passwordHistoryRepository.delete(oldestHistory);
+        }
     }
 
     public User findById(Long userId) {
