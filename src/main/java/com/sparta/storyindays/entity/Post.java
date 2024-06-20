@@ -6,11 +6,13 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @Table(name = "post")
+@EntityListeners(AuditingEntityListener.class)
 public class Post extends Timstamped {
 
     @Id
@@ -30,9 +32,9 @@ public class Post extends Timstamped {
     @Column(name = "is_pinned", nullable = false)
     private Boolean isPinned;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 //    @OneToMany
 //    private Comment comment;
@@ -43,7 +45,7 @@ public class Post extends Timstamped {
         this.contents = contents;
         this.isPinned = isPinned;
         this.postType = postType;
-//        this.user = user;
+        this.user = user;
     }
 
     public void setPin() {

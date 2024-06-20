@@ -52,13 +52,11 @@ public class PostController {
 //    }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<CommonResDto<PostUpdateResDto>> updatePost(@RequestParam("postId") int postId, @RequestBody PostReqDto reqDto) {
+    public ResponseEntity<CommonResDto<PostUpdateResDto>> updatePost(@PathVariable long postId, @RequestBody PostReqDto reqDto) {
 
         PostUpdateResDto updateResDto = postService.updatePost(postId, reqDto);
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
                 , "게시물 수정에 성공했습니다!"
                 , updateResDto));
     }
-
-
 }

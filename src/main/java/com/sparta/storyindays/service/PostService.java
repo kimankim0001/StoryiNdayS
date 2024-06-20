@@ -4,7 +4,6 @@ import com.sparta.storyindays.dto.post.PostGetResDto;
 import com.sparta.storyindays.dto.post.PostReqDto;
 import com.sparta.storyindays.dto.post.PostResDto;
 import com.sparta.storyindays.dto.post.PostUpdateResDto;
-import com.sparta.storyindays.dto.user.Auth;
 import com.sparta.storyindays.entity.Post;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.enums.post.PostType;
@@ -22,13 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final UserService userService;
     private final JwtProvider jwtProvider;
 
     public PostResDto writePost(PostReqDto reqDto, String accessToken) {
         // 유효한 JWT 토큰을 가진 본인, 인가된 유저인지 체크 jwtProvider
 
         // 유저를 레포지토리에서 찾아옴
-        User user = new User("test2", "123", "lee2", Auth.USER, "test@email.com");
+        User user = userService.findById(2L);
         // req, 찾아온 user로 게시글 entity 생성
         Post post = postRepository.save(reqDto.toPostEntity(user));
         // save 후 res dto로 반환
@@ -76,7 +76,7 @@ public class PostService {
     }
 
     @Transactional
-    public PostUpdateResDto updatePost(int postId, PostReqDto reqDto) {
+    public PostUpdateResDto updatePost(long postId, PostReqDto reqDto) {
 
         // 본인이 작성한 게시글의 수정인 경우만 인가하도록 조건걸기
         Post post = findById(postId);

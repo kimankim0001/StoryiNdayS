@@ -28,7 +28,7 @@ public class UserService {
         return new ProfileUpdateResDto(user);
     }
 
-    private User findById(Long userId) {
+    public User findById(Long userId) {
         return userRepository.findById(userId).orElseThrow(() ->
                 new IllegalArgumentException("해당 사용자는 존재하지 않습니다.")
         );

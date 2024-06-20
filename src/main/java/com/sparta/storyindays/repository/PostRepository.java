@@ -1,7 +1,6 @@
 package com.sparta.storyindays.repository;
 
 import com.sparta.storyindays.entity.Post;
-import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.enums.post.PostType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
