@@ -29,9 +29,9 @@ public class Post extends Timstamped {
     @Column(name = "is_pinned", nullable = false)
     private Boolean isPinned;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+//    @ManyToOne
+//    @JoinColumn(name = "user_id")
+//    private User user;
 
 //    @OneToMany
 //    private Comment comment;
@@ -42,7 +42,7 @@ public class Post extends Timstamped {
         this.contents = contents;
         this.isPinned = isPinned;
         this.postType = postType;
-        this.user = user;
+//        this.user = user;
     }
 
     public void setPin() {

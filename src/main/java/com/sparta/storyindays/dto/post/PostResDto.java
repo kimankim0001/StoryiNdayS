@@ -15,7 +15,8 @@ public class PostResDto {
     private boolean isPinned;
 
     public PostResDto(Post post) {
-        name = post.getUser().getName();
+//        name = post.getUser().getName();
+        name = "테스트유저";
         title = post.getTitle();
         contents = post.getContents();
         createAt = post.getCreatedAt();
