@@ -1,15 +1,17 @@
 package com.sparta.storyindays.service;
 
 import com.sparta.storyindays.config.JwtConfig;
-import com.sparta.storyindays.dto.user.Auth;
+import com.sparta.storyindays.enums.user.Auth;
 import com.sparta.storyindays.dto.user.LoginReqDto;
 import com.sparta.storyindays.dto.user.SignupReqDto;
 import com.sparta.storyindays.entity.PasswordHistory;
 import com.sparta.storyindays.entity.User;
+import com.sparta.storyindays.exception.BusinessLogicException;
 import com.sparta.storyindays.jwt.JwtProvider;
 import com.sparta.storyindays.repository.PasswordHistoryRepository;
 import com.sparta.storyindays.repository.UserRepository;
 import com.sparta.storyindays.security.UserDetailsImpl;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -20,6 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -63,7 +67,7 @@ public class AuthService {
     }
 
     @Transactional
-    public String login(LoginReqDto loginReqDto) {
+    public List<String> login(LoginReqDto loginReqDto) {
         log.info("로그인 시도");
         Authentication authentication = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -78,10 +82,33 @@ public class AuthService {
         String accessToken = jwtProvider.createToken(user, JwtConfig.accessTokenTime);
         String refreshToken = jwtProvider.createToken(user, JwtConfig.refreshTokenTime);
 
+        List<String> tokens = new ArrayList<>();
+        tokens.add(accessToken);
+        tokens.add(refreshToken);
+
         user.updateRefreshToken(refreshToken);
         log.info("로그인 완료");
-        return accessToken;
+        return tokens;
     }
 
 
+    public String reissue(String refreshToken) {
+        log.info("토큰 재발행 시도");
+
+        String subToken = jwtProvider.substringToken(refreshToken);
+        Claims userInfo = jwtProvider.getUserInfoFromToken(subToken);
+        User user = userRepository.findByUsername(userInfo.getSubject()).orElseThrow(
+                () -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다.")
+        );
+
+        if(!user.getRefreshToken().equals(refreshToken)){
+            throw new BusinessLogicException("위변조된 토큰입니다.");
+        }
+
+        if(jwtProvider.isExpiredToken(subToken)){
+            throw new BusinessLogicException("만료된 토큰입니다. 다시 로그인해주세요.");
+        }
+
+        return jwtProvider.createToken(user,JwtConfig.accessTokenTime);
+    }
 }
