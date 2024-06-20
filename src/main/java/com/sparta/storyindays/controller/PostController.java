@@ -54,20 +54,22 @@ public class PostController {
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<CommonResDto<PostUpdateResDto>> updatePost(@PathVariable long postId, @RequestBody PostReqDto reqDto) {
+    public ResponseEntity<CommonResDto<PostUpdateResDto>> updatePost(@PathVariable long postId, @RequestBody PostReqDto reqDto
+            , HttpServletRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        PostUpdateResDto updateResDto = postService.updatePost(postId, reqDto);
+        PostUpdateResDto updateResDto = postService.updatePost(postId, reqDto, request, userDetails.getUser());
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
                 , "게시물 수정에 성공했습니다!"
                 , updateResDto));
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseEntity<CommonResDto<Void>> deletePost(@PathVariable long postId){
+    public ResponseEntity<CommonResDto<Void>> deletePost(@PathVariable long postId
+            , HttpServletRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        postService.deletePost(postId);
+        postService.deletePost(postId, request, userDetails.getUser());
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
-                , "게시물 삭제에 성공했습니다!" ,
+                , "게시물 삭제에 성공했습니다!",
                 null));
     }
 }
