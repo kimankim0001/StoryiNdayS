@@ -3,6 +3,7 @@ package com.sparta.storyindays.controller;
 import com.sparta.storyindays.dto.CommonResDto;
 import com.sparta.storyindays.dto.comment.CommentCreateReqDto;
 import com.sparta.storyindays.dto.comment.CommentResDto;
+import com.sparta.storyindays.dto.comment.CommentUpdateReqDto;
 import com.sparta.storyindays.security.UserDetailsImpl;
 import com.sparta.storyindays.service.CommentService;
 import jakarta.validation.Valid;
@@ -30,8 +31,22 @@ public class CommentController {
 
     //댓글 조회
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<CommonResDto<List<CommentResDto>>> getAllComment (@PathVariable(name = "postId") long postId) {
+    public ResponseEntity<CommonResDto<List<CommentResDto>>> getAllComment(@PathVariable(name = "postId") long postId) {
         List<CommentResDto> resDto = commentService.getAllComment(postId);
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value(), "댓글 조회에 성공하였습니다!", resDto));
+    }
+
+    // 댓글 수정
+    @PutMapping("/posts/{postId}/comments/{commentId}")
+    public ResponseEntity<CommonResDto<CommentResDto>> updateComment(@PathVariable(name = "postId") long postId, @PathVariable(name = "commentId") long commentId, @Valid @RequestBody CommentUpdateReqDto reqDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        CommentResDto resDto = commentService.updateComment(postId, commentId, reqDto, userDetails.getUser());
+        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value(), "댓글 수정에 성공하였습니다!", resDto));
+    }
+
+    // 댓글 삭제
+    @DeleteMapping("/posts/{postId}/comments/{commentId}")
+    public ResponseEntity<CommonResDto<Void>> deleteComment(@PathVariable(name = "postId") long postId, @PathVariable(name = "commentId") long commentId, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        commentService.deleteComment(postId, commentId, userDetails.getUser());
+        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value(), "댓글 삭제에 성공하였습니다!", null));
     }
 }
