@@ -57,6 +57,22 @@ public class CommentService {
         return CommentResDto.toDto(comment);
     }
 
+    //댓글 삭제
+    @Transactional
+    public void deleteComment(long postId, long commentId, User user) {
+
+        postService.findById(postId);
+        Comment comment = findComment(commentId);
+        String loginUsername = user.getUsername();
+        String commentUsername = comment.getUser().getUsername();
+
+        if (!loginUsername.equals(commentUsername)) {
+            throw new IllegalArgumentException("댓글 작성자와 현재 사용자가 불일치합니다.");
+        }
+        commentRepository.delete(comment);
+    }
+
+    //댓글찾는 메서드
     public Comment findComment(long commentId) {
 
         return commentRepository.findById(commentId).orElseThrow(
