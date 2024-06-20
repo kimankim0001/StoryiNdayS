@@ -28,12 +28,14 @@ public class User extends Timstamped {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
     private State state = State.ACTIVATION;
 
     @Column(name = "refresh_token", nullable = false)
     private String refresh_token = "";
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "auth", nullable = false)
     private Auth auth;
 
