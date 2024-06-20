@@ -4,13 +4,12 @@ import com.sparta.storyindays.dto.CommonResDto;
 import com.sparta.storyindays.dto.post.PostGetResDto;
 import com.sparta.storyindays.dto.post.PostReqDto;
 import com.sparta.storyindays.dto.post.PostResDto;
-import com.sparta.storyindays.security.UserDetailsImpl;
+import com.sparta.storyindays.dto.post.PostUpdateResDto;
 import com.sparta.storyindays.service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -41,14 +40,25 @@ public class PostController {
                 , updateResDtoList));
     }
 
-    @GetMapping("/users")
-    public ResponseEntity<CommonResDto<PostGetResDto>> getUserPost(@AuthenticationPrincipal UserDetailsImpl userDetails
-            , @RequestParam("page") int page
-            , @RequestParam("isAsc") boolean isAsc) {
+//    @GetMapping("/users")
+//    public ResponseEntity<CommonResDto<PostGetResDto>> getUserPost(@AuthenticationPrincipal UserDetailsImpl userDetails
+//            , @RequestParam("page") int page
+//            , @RequestParam("isAsc") boolean isAsc) {
+//
+//        PostGetResDto updateResDtoList = postService.getUserPost(userDetails.getUser(), page - 1, isAsc);
+//        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
+//                , "전체 게시물 조회에 성공했습니다!"
+//                , updateResDtoList));
+//    }
 
-        PostGetResDto updateResDtoList = postService.getUserPost(userDetails.getUser(), page - 1, isAsc);
+    @PutMapping("/{postId}")
+    public ResponseEntity<CommonResDto<PostUpdateResDto>> updatePost(@RequestParam("postId") int postId, @RequestBody PostReqDto reqDto) {
+
+        PostUpdateResDto updateResDto = postService.updatePost(postId, reqDto);
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
-                , "전체 게시물 조회에 성공했습니다!"
-                , updateResDtoList));
+                , "게시물 수정에 성공했습니다!"
+                , updateResDto));
     }
+
+
 }

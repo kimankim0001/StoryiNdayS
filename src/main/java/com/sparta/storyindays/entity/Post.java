@@ -1,5 +1,6 @@
 package com.sparta.storyindays.entity;
 
+import com.sparta.storyindays.dto.post.PostReqDto;
 import com.sparta.storyindays.enums.post.PostType;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -47,5 +48,10 @@ public class Post extends Timstamped {
 
     public void setPin() {
         isPinned = true;
+    }
+
+    public void update(PostReqDto reqDto) {
+        title = reqDto.getTitle();
+        contents = reqDto.getContents();
     }
 }

@@ -16,5 +16,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findAllByPostTypeAndIsPinned(PostType postType, boolean isPinned, Pageable pageable);
 
-    Page<Post> findAllByPostTypeAndIsPinnedAndUser(PostType postType, boolean b, Pageable pageable, User user);
+    //Page<Post> findAllByPostTypeAndIsPinnedAndUser(PostType postType, boolean b, Pageable pageable, User user);
 }

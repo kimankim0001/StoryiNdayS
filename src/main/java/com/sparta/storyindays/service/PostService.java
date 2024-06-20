@@ -3,6 +3,7 @@ package com.sparta.storyindays.service;
 import com.sparta.storyindays.dto.post.PostGetResDto;
 import com.sparta.storyindays.dto.post.PostReqDto;
 import com.sparta.storyindays.dto.post.PostResDto;
+import com.sparta.storyindays.dto.post.PostUpdateResDto;
 import com.sparta.storyindays.dto.user.Auth;
 import com.sparta.storyindays.entity.Post;
 import com.sparta.storyindays.entity.User;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -50,21 +52,21 @@ public class PostService {
         return postGetResDto;
     }
 
-    public PostGetResDto getUserPost(User user, int page, boolean isAsc) {
-        Pageable pageable = getPageable(page, isAsc);
+//    public PostGetResDto getUserPost(User user, int page, boolean isAsc) {
+//        Pageable pageable = getPageable(page, isAsc);
+//
+//        // 유저를 레포지토리에서 찾아옴
+//        User testuser = new User("test", "123", "lee", Auth.USER, "test@email.com");
+//
+//        PostGetResDto postGetResDto = new PostGetResDto(postRepository.findAllByPostType(PostType.NOTICE)
+//                , postRepository.findAllByPostTypeAndIsPinned(PostType.NORMAL, true)
+//                , postRepository.findAllByPostTypeAndIsPinnedAndUser(PostType.NORMAL, false, pageable, user));
+//
+//        postGetResDto.inputTestData();
+//        return postGetResDto;
+//    }
 
-        // 유저를 레포지토리에서 찾아옴
-        User testuser = new User("test", "123", "lee", Auth.USER, "test@email.com");
-
-        PostGetResDto postGetResDto = new PostGetResDto(postRepository.findAllByPostType(PostType.NOTICE)
-        , postRepository.findAllByPostTypeAndIsPinned(PostType.NORMAL, true)
-        , postRepository.findAllByPostTypeAndIsPinnedAndUser(PostType.NORMAL, false, pageable, user));
-
-        postGetResDto.inputTestData();
-        return postGetResDto;
-    }
-
-    public Pageable getPageable(int page, boolean isAsc){
+    public Pageable getPageable(int page, boolean isAsc) {
         // 정렬방향, 정렬 기준(생성일자 고정), 페이저블 생성
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, "createdAt");
@@ -73,8 +75,17 @@ public class PostService {
         return pageable;
     }
 
-    public Post findById(long id){
-        return postRepository.findById(id).orElseThrow( () ->
+    @Transactional
+    public PostUpdateResDto updatePost(int postId, PostReqDto reqDto) {
+
+        // 본인이 작성한 게시글의 수정인 경우만 인가하도록 조건걸기
+        Post post = findById(postId);
+        post.update(reqDto);
+        return new PostUpdateResDto(post);
+    }
+
+    public Post findById(long id) {
+        return postRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않는 id입니다"));
     }
 }
