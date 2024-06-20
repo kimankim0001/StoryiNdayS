@@ -97,7 +97,7 @@ public class PostService {
                 new IllegalArgumentException("존재하지 않는 게시글 입니다"));
     }
 
-    private Pageable getPageable(int page, boolean isAsc) {
+    public Pageable getPageable(int page, boolean isAsc) {
         // 정렬방향, 정렬 기준(생성일자 고정), 페이저블 생성
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction, "createdAt");
@@ -106,7 +106,7 @@ public class PostService {
         return pageable;
     }
 
-    private User validUserCheckAndGetUser (HttpServletRequest request, User user) {
+    public User validUserCheckAndGetUser (HttpServletRequest request, User user) {
         // 유효한 JWT 토큰을 체크 jwtProvider
         String accessToken = request.getHeader(JwtConfig.AUTHORIZATION_HEADER);
         accessToken = jwtProvider.substringToken(accessToken);
