@@ -1,12 +1,15 @@
 package com.sparta.storyindays.entity;
 
 import com.sparta.storyindays.dto.user.Auth;
+import com.sparta.storyindays.dto.user.ProfileUpdateReqDto;
 import com.sparta.storyindays.dto.user.State;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor
 @Table(name = "users")
 public class User extends Timstamped {
 
@@ -26,12 +29,14 @@ public class User extends Timstamped {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
     private State state = State.ACTIVATION;
 
     @Column(name = "refresh_token", nullable = false)
     private String refresh_token = "";
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "auth", nullable = false)
     private Auth auth;
 
@@ -44,5 +49,10 @@ public class User extends Timstamped {
         this.name = name;
         this.auth = auth;
         this.email = email;
+    }
+
+    public void update(ProfileUpdateReqDto profileUpdateReqDto) {
+        this.name = profileUpdateReqDto.getName();
+        this.introduction = profileUpdateReqDto.getInstroduction();
     }
 }
