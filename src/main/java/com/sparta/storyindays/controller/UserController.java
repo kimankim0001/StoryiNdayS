@@ -25,4 +25,12 @@ public class UserController {
                 , "프로필 조회에 성공하였습니다!"
                 , responseDto));
     }
+
+    @PutMapping("/users/{userId}/profile")
+    public ResponseEntity<CommonResDto<ProfileUpdateResDto>> updateProfile(@PathVariable Long userId, @RequestBody @Valid ProfileUpdateReqDto reqDto) {
+        ProfileUpdateResDto responseDto = userService.updateProfile(userId, reqDto);
+        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
+            ,"프로필 수정에 성공하였습니다!"
+            , responseDto));
+    }
 }
