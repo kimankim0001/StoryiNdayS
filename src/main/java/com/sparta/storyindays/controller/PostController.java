@@ -4,15 +4,14 @@ import com.sparta.storyindays.dto.CommonResDto;
 import com.sparta.storyindays.dto.post.PostGetResDto;
 import com.sparta.storyindays.dto.post.PostReqDto;
 import com.sparta.storyindays.dto.post.PostResDto;
-import com.sparta.storyindays.dto.post.PostUpdateResDto;
+import com.sparta.storyindays.security.UserDetailsImpl;
 import com.sparta.storyindays.service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -36,7 +35,18 @@ public class PostController {
     public ResponseEntity<CommonResDto<PostGetResDto>> getAllPost(@RequestParam("page") int page
             , @RequestParam("isAsc") boolean isAsc) {
 
-        PostGetResDto updateResDtoList = postService.getAllPost(page-1, isAsc);
+        PostGetResDto updateResDtoList = postService.getAllPost(page - 1, isAsc);
+        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
+                , "전체 게시물 조회에 성공했습니다!"
+                , updateResDtoList));
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<CommonResDto<PostGetResDto>> getUserPost(@AuthenticationPrincipal UserDetailsImpl userDetails
+            , @RequestParam("page") int page
+            , @RequestParam("isAsc") boolean isAsc) {
+
+        PostGetResDto updateResDtoList = postService.getUserPost(userDetails.getUser(), page - 1, isAsc);
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
                 , "전체 게시물 조회에 성공했습니다!"
                 , updateResDtoList));
