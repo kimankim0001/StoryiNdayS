@@ -1,11 +1,9 @@
 package com.sparta.storyindays.service;
 
 import com.sparta.storyindays.config.JwtConfig;
-import com.sparta.storyindays.config.SecurityConfig;
 import com.sparta.storyindays.dto.user.Auth;
 import com.sparta.storyindays.dto.user.LoginReqDto;
 import com.sparta.storyindays.dto.user.SignupReqDto;
-import com.sparta.storyindays.dto.user.State;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.jwt.JwtProvider;
 import com.sparta.storyindays.repository.UserRepository;
@@ -16,7 +14,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,22 +56,24 @@ public class AuthService {
 
     @Transactional
     public String login(LoginReqDto loginReqDto) {
-            log.info("로그인 시도");
-            Authentication authentication = this.authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginReqDto.getUsername(),
-                            loginReqDto.getPassword(),
-                            null
-                    )
-            );
+        log.info("로그인 시도");
+        Authentication authentication = this.authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginReqDto.getUsername(),
+                        loginReqDto.getPassword(),
+                        null
+                )
+        );
 
-            User user = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
+        User user = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
 
-            String accessToken = jwtProvider.createToken(user, JwtConfig.accessTokenTime);
-            String refreshToken = jwtProvider.createToken(user, JwtConfig.refreshTokenTime);
+        String accessToken = jwtProvider.createToken(user, JwtConfig.accessTokenTime);
+        String refreshToken = jwtProvider.createToken(user, JwtConfig.refreshTokenTime);
 
-            user.updateRefreshToken(refreshToken);
-            log.info("로그인 완료");
-            return accessToken;
+        user.updateRefreshToken(refreshToken);
+        log.info("로그인 완료");
+        return accessToken;
     }
+
+
 }
