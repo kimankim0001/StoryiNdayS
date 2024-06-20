@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
-@Table(name = "Comments")
+@Table(name = "Comment")
 public class Comment extends Timstamped {
 
     @Id
@@ -17,11 +17,11 @@ public class Comment extends Timstamped {
     private String comment;
 
     @ManyToOne
-    @JoinColumn(name = "Posts_id", nullable = false)
+    @JoinColumn(name = "Post_id", nullable = false)
     private Post post;
 
     @ManyToOne
-    @JoinColumn(name = "Users_id", nullable = false)
+    @JoinColumn(name = "User_id", nullable = false)
     private User user;
 
     public Comment(String comment, Post post, User user) {
