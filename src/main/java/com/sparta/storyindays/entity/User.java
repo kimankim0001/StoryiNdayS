@@ -12,7 +12,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "users")
+@Table(name = "user")
 public class User extends Timstamped {
 
     @Id
