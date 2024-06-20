@@ -1,4 +1,7 @@
 package com.sparta.storyindays.repository;
 
-public interface CommentRepository {
+import com.sparta.storyindays.entity.Comment;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CommentRepository extends JpaRepository<Comment, Long> {
 }
