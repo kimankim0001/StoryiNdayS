@@ -1,16 +1,18 @@
 package com.sparta.storyindays.entity;
 
 import com.sparta.storyindays.dto.user.Auth;
+import com.sparta.storyindays.dto.user.PasswordUpdateReqDto;
 import com.sparta.storyindays.dto.user.ProfileUpdateReqDto;
 import com.sparta.storyindays.dto.user.State;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "users")
+@Table(name = "user")
 public class User extends Timstamped {
 
     @Id
@@ -58,5 +60,9 @@ public class User extends Timstamped {
     public void update(ProfileUpdateReqDto profileUpdateReqDto) {
         this.name = profileUpdateReqDto.getName();
         this.introduction = profileUpdateReqDto.getInstroduction();
+    }
+
+    public void passwordUpdate(String password) {
+        this.password = password;
     }
 }

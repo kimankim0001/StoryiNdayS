@@ -1,9 +1,7 @@
 package com.sparta.storyindays.controller;
 
 import com.sparta.storyindays.dto.CommonResDto;
-import com.sparta.storyindays.dto.user.ProfileResDto;
-import com.sparta.storyindays.dto.user.ProfileUpdateReqDto;
-import com.sparta.storyindays.dto.user.ProfileUpdateResDto;
+import com.sparta.storyindays.dto.user.*;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.service.UserService;
 import jakarta.validation.Valid;
@@ -32,5 +30,13 @@ public class UserController {
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
             ,"프로필 수정에 성공하였습니다!"
             , responseDto));
+    }
+
+    @PutMapping("/users/{userId}/password")
+    public ResponseEntity<CommonResDto<Void>> updatePassword(@PathVariable Long userId, @RequestBody @Valid PasswordUpdateReqDto reqDto) {
+        userService.updatePassword(userId, reqDto);
+        return  ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
+        ,"비밀번호가 변경되었습니다."
+        ,null));
     }
 }
