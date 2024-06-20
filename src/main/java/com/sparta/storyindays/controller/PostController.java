@@ -41,14 +41,14 @@ public class PostController {
                 , updateResDtoList));
     }
 
-    @GetMapping("/users")
-    public ResponseEntity<CommonResDto<PostGetResDto>> getUserPost(@AuthenticationPrincipal UserDetailsImpl userDetails
-            , @RequestParam("page") int page
-            , @RequestParam("isAsc") boolean isAsc) {
-
-        PostGetResDto updateResDtoList = postService.getUserPost(userDetails.getUser(), page - 1, isAsc);
-        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
-                , "전체 게시물 조회에 성공했습니다!"
-                , updateResDtoList));
-    }
+//    @GetMapping("/users")
+//    public ResponseEntity<CommonResDto<PostGetResDto>> getUserPost(@AuthenticationPrincipal UserDetailsImpl userDetails
+//            , @RequestParam("page") int page
+//            , @RequestParam("isAsc") boolean isAsc) {
+//
+//        PostGetResDto updateResDtoList = postService.getUserPost(userDetails.getUser(), page - 1, isAsc);
+//        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
+//                , "전체 게시물 조회에 성공했습니다!"
+//                , updateResDtoList));
+//    }
 }

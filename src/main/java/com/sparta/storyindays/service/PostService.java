@@ -50,19 +50,19 @@ public class PostService {
         return postGetResDto;
     }
 
-    public PostGetResDto getUserPost(User user, int page, boolean isAsc) {
-        Pageable pageable = getPageable(page, isAsc);
-
-        // 유저를 레포지토리에서 찾아옴
-        User testuser = new User("test", "123", "lee", Auth.USER, "test@email.com");
-
-        PostGetResDto postGetResDto = new PostGetResDto(postRepository.findAllByPostType(PostType.NOTICE)
-        , postRepository.findAllByPostTypeAndIsPinned(PostType.NORMAL, true)
-        , postRepository.findAllByPostTypeAndIsPinnedAndUser(PostType.NORMAL, false, pageable, user));
-
-        postGetResDto.inputTestData();
-        return postGetResDto;
-    }
+//    public PostGetResDto getUserPost(User user, int page, boolean isAsc) {
+//        Pageable pageable = getPageable(page, isAsc);
+//
+//        // 유저를 레포지토리에서 찾아옴
+//        User testuser = new User("test", "123", "lee", Auth.USER, "test@email.com");
+//
+//        PostGetResDto postGetResDto = new PostGetResDto(postRepository.findAllByPostType(PostType.NOTICE)
+//        , postRepository.findAllByPostTypeAndIsPinned(PostType.NORMAL, true)
+//        , postRepository.findAllByPostTypeAndIsPinnedAndUser(PostType.NORMAL, false, pageable, user));
+//
+//        postGetResDto.inputTestData();
+//        return postGetResDto;
+//    }
 
     public Pageable getPageable(int page, boolean isAsc){
         // 정렬방향, 정렬 기준(생성일자 고정), 페이저블 생성
