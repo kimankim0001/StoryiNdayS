@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class PostUpdateResDto {
 
+    private String name;
+
     private String title;
 
     private String contents;
@@ -26,6 +28,7 @@ public class PostUpdateResDto {
     private LocalDateTime modifiedAt;
 
     public PostUpdateResDto(Post post) {
+        name = post.getUser().getName();
         title = post.getTitle();
         contents = post.getContents();
         postType = post.getPostType();
