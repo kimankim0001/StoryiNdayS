@@ -4,9 +4,11 @@ import com.sparta.storyindays.dto.user.Auth;
 import com.sparta.storyindays.dto.user.State;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor
 @Table(name = "users")
 public class User extends Timstamped {
 
