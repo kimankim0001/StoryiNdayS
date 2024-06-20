@@ -27,7 +27,7 @@ public class CommentResDto {
     }
 
     public static CommentResDto toDto(Comment comment) {
-        return new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment(), comment.getPost().getId(), comment.getCreatedAt(), comment.getModifiedAt());
+        return new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment(), comment.getCreatedAt(), comment.getModifiedAt());
     }
 
 }
