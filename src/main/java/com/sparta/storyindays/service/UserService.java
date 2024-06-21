@@ -79,4 +79,9 @@ public class UserService {
                 new IllegalArgumentException("해당 사용자는 존재하지 않습니다.")
         );
     }
+
+    public User findByUserName(String userName) {
+        return userRepository.findByUsername(userName).orElseThrow(() ->
+                new IllegalArgumentException("해당 사용자는 존재하지 않습니다"));
+    }
 }
