@@ -13,22 +13,10 @@ public class PostReqDto {
     String contents;
 
     public Post toPostEntity(User user) {
-        return Post.builder()
-                .title(title)
-                .contents(contents)
-                .isPinned(false)
-                .postType(PostType.NORMAL)
-                .user(user)
-                .build();
+        return new Post(title, contents, false, PostType.NORMAL, user);
     }
 
     public Post toNoticePostEntity(User user) {
-        return Post.builder()
-                .title(title)
-                .contents(contents)
-                .isPinned(false)
-                .postType(PostType.NOTICE)
-                .user(user)
-                .build();
+        return new Post(title, contents, false, PostType.NOTICE, user);
     }
 }

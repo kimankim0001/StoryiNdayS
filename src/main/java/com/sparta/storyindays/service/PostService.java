@@ -7,6 +7,7 @@ import com.sparta.storyindays.enums.post.PostType;
 import com.sparta.storyindays.enums.user.Auth;
 import com.sparta.storyindays.exception.BusinessLogicException;
 import com.sparta.storyindays.repository.PostRepository;
+import com.sparta.storyindays.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +33,7 @@ public class PostService {
 
     public PostGetResDto getAllPost(int page, boolean isAsc) {
 
-        Pageable pageable = getPageable(page, isAsc);
+        Pageable pageable = Utils.getPageable(page, isAsc);
 
         // repository에서 공지글 찾아오기
         // repository에서 상단글 찾아오기
@@ -45,7 +46,7 @@ public class PostService {
     }
 
     public PostGetResDto getUserPost(String userName, int page, boolean isAsc) {
-        Pageable pageable = getPageable(page, isAsc);
+        Pageable pageable = Utils.getPageable(page, isAsc);
 
         User searchUser = userService.findByUserName(userName);
 
@@ -76,9 +77,11 @@ public class PostService {
         User curUser = userService.findById(user.getId());
 
         Post post = findById(postId);
-        if(!post.getUser().getUsername().equals(curUser.getUsername()))
-        {
+        if(!post.getUser().getUsername().equals(curUser.getUsername())) {
             throw new BusinessLogicException("본인이 작성한 게시글만 삭제할 수 있습니다");
+        }
+        if(post.getUser().getAuth().equals(Auth.USER) && post.getPostType().equals(PostType.NOTICE)) {
+            throw new BusinessLogicException("공지는 관리자만 삭제할 수 있습니다");
         }
         postRepository.delete(post);
     }
@@ -86,7 +89,7 @@ public class PostService {
 
     public PostNotifyResDto writeNoticePost(PostReqDto reqDto, User user) {
 
-        User curUser = userAuthCheck(user);
+        User curUser = userService.findById(user.getId());
 
         Post post = postRepository.save(reqDto.toNoticePostEntity(curUser));
         PostNotifyResDto postReqDto = new PostNotifyResDto(post);
@@ -94,9 +97,7 @@ public class PostService {
         return postReqDto;
     }
 
-    public PostUpdateResDto updatePostByAdmin(long postId, PostReqDto reqDto, User user) {
-
-       userAuthCheck(user);
+    public PostUpdateResDto updatePostByAdmin(long postId, PostReqDto reqDto) {
 
         Post post = findById(postId);
         post.update(reqDto);
@@ -104,16 +105,15 @@ public class PostService {
         return new PostUpdateResDto(post);
     }
 
-    public void deletePostByAdmin(long postId, User user) {
+    public void deletePostByAdmin(long postId) {
 
-        userAuthCheck(user);
         Post post = findById(postId);
         postRepository.delete(post);
     }
 
     @Transactional
-    public PostUpdateResDto pinPost(long postId, boolean isPinned, User user) {
-        userAuthCheck(user);
+    public PostUpdateResDto pinPost(long postId, boolean isPinned) {
+
         Post post = findById(postId);
         post.setPin(isPinned);
 
@@ -125,21 +125,12 @@ public class PostService {
                 new IllegalArgumentException("존재하지 않는 게시글 입니다"));
     }
 
-    public Pageable getPageable(int page, boolean isAsc) {
-        // 정렬방향, 정렬 기준(생성일자 고정), 페이저블 생성
-        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, "createdAt");
-        Pageable pageable = PageRequest.of(page, 5, sort);
-
-        return pageable;
-    }
-
-    public User userAuthCheck(User user){
-        User curUser = userService.findById(user.getId());
-        if(curUser.getAuth().equals(Auth.USER)){
-            throw new BusinessLogicException("Admin 권한이 필요합니다");
-        }
-
-        return curUser;
-    }
+//    public User userAuthCheck(User user){
+//        User curUser = userService.findById(user.getId());
+//        if(curUser.getAuth().equals(Auth.USER)){
+//            throw new BusinessLogicException("Admin 권한이 필요합니다");
+//        }
+//
+//        return curUser;
+//    }
 }
