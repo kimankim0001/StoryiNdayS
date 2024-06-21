@@ -76,9 +76,11 @@ public class PostService {
         User curUser = userService.findById(user.getId());
 
         Post post = findById(postId);
-        if(!post.getUser().getUsername().equals(curUser.getUsername()))
-        {
+        if(!post.getUser().getUsername().equals(curUser.getUsername())) {
             throw new BusinessLogicException("본인이 작성한 게시글만 삭제할 수 있습니다");
+        }
+        if(post.getUser().getAuth().equals(Auth.USER) && post.getPostType().equals(PostType.NOTICE)) {
+            throw new BusinessLogicException("공지는 관리자만 삭제할 수 있습니다");
         }
         postRepository.delete(post);
     }
@@ -86,7 +88,7 @@ public class PostService {
 
     public PostNotifyResDto writeNoticePost(PostReqDto reqDto, User user) {
 
-        User curUser = userAuthCheck(user);
+        User curUser = userService.findById(user.getId());
 
         Post post = postRepository.save(reqDto.toNoticePostEntity(curUser));
         PostNotifyResDto postReqDto = new PostNotifyResDto(post);
@@ -94,9 +96,7 @@ public class PostService {
         return postReqDto;
     }
 
-    public PostUpdateResDto updatePostByAdmin(long postId, PostReqDto reqDto, User user) {
-
-       userAuthCheck(user);
+    public PostUpdateResDto updatePostByAdmin(long postId, PostReqDto reqDto) {
 
         Post post = findById(postId);
         post.update(reqDto);
@@ -104,16 +104,15 @@ public class PostService {
         return new PostUpdateResDto(post);
     }
 
-    public void deletePostByAdmin(long postId, User user) {
+    public void deletePostByAdmin(long postId) {
 
-        userAuthCheck(user);
         Post post = findById(postId);
         postRepository.delete(post);
     }
 
     @Transactional
-    public PostUpdateResDto pinPost(long postId, boolean isPinned, User user) {
-        userAuthCheck(user);
+    public PostUpdateResDto pinPost(long postId, boolean isPinned) {
+
         Post post = findById(postId);
         post.setPin(isPinned);
 
@@ -134,12 +133,12 @@ public class PostService {
         return pageable;
     }
 
-    public User userAuthCheck(User user){
-        User curUser = userService.findById(user.getId());
-        if(curUser.getAuth().equals(Auth.USER)){
-            throw new BusinessLogicException("Admin 권한이 필요합니다");
-        }
-
-        return curUser;
-    }
+//    public User userAuthCheck(User user){
+//        User curUser = userService.findById(user.getId());
+//        if(curUser.getAuth().equals(Auth.USER)){
+//            throw new BusinessLogicException("Admin 권한이 필요합니다");
+//        }
+//
+//        return curUser;
+//    }
 }

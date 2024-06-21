@@ -84,33 +84,30 @@ public class PostController {
     }
 
     @PutMapping("/admins/posts/{postId}")
-    public ResponseEntity<CommonResDto<PostUpdateResDto>> updatePostByAdmin(@PathVariable long postId, @RequestBody PostReqDto reqDto
-            , @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<CommonResDto<PostUpdateResDto>> updatePostByAdmin(@PathVariable long postId, @RequestBody PostReqDto reqDto) {
 
-        PostUpdateResDto updateResDto = postService.updatePostByAdmin(postId, reqDto, userDetails.getUser());
+        PostUpdateResDto updateResDto = postService.updatePostByAdmin(postId, reqDto);
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
-                , "게시글 수정에 성공했습니다!"
+                , "관리자가 게시글 수정에 성공했습니다!"
                 , updateResDto));
     }
 
     @DeleteMapping("/admins/posts/{postId}")
-    public ResponseEntity<CommonResDto<Void>> deletePostByAdmin(@PathVariable long postId
-            , @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<CommonResDto<Void>> deletePostByAdmin(@PathVariable long postId) {
 
-        postService.deletePostByAdmin(postId, userDetails.getUser());
+        postService.deletePostByAdmin(postId);
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
-                , "게시글 삭제에 성공했습니다!",
+                , "관리자가 게시글 삭제에 성공했습니다!",
                 null));
     }
 
     @PutMapping("/admins/posts/{postId}/pins")
     public ResponseEntity<CommonResDto<PostUpdateResDto>> pinPost(@PathVariable long postId
-            , @RequestParam("isPinned") boolean isPinned
-            , @AuthenticationPrincipal UserDetailsImpl userDetails) {
+            , @RequestParam("isPinned") boolean isPinned) {
 
-        PostUpdateResDto updateResDto = postService.pinPost(postId, isPinned, userDetails.getUser());
+        PostUpdateResDto updateResDto = postService.pinPost(postId, isPinned);
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
-                , "게시글 고정에 성공했습니다"
+                , "관리자가 게시글 고정에 성공했습니다"
                 , updateResDto));
     }
 }
