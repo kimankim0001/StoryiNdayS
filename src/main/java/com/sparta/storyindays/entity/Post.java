@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -36,8 +39,8 @@ public class Post extends Timstamped {
     @JoinColumn(name = "user_id")
     private User user;
 
-//    @OneToMany
-//    private Comment comment;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private final List<Comment> commentList = new ArrayList<>();
 
     @Builder
     public Post(String title, String contents, boolean isPinned, PostType postType, User user) {
@@ -55,5 +58,9 @@ public class Post extends Timstamped {
     public void update(PostReqDto reqDto) {
         title = reqDto.getTitle();
         contents = reqDto.getContents();
+    }
+
+    public void addComment(Comment comment) {
+        this.commentList.add(comment);
     }
 }

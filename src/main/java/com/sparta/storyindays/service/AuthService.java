@@ -14,6 +14,7 @@ import com.sparta.storyindays.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,6 +38,8 @@ public class AuthService {
     private final MessageSource messageSource;
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
+    @Value("${admin.secret.key}")
+    private String ADMIN_TOKEN;
 
     public void signup(SignupReqDto signupReqDto) {
 
@@ -46,7 +49,14 @@ public class AuthService {
         Auth auth = signupReqDto.getAuthType();
         String email = signupReqDto.getEmail();
 
-        if (userRepository.findByUsername(signupReqDto.getName()).isPresent()) {
+        //admin으로 회원가입시
+        if (Auth.ADMIN.equals(auth)) {
+            if(!ADMIN_TOKEN.equals(signupReqDto.getAuthToken())){
+                throw new BusinessLogicException("관리자 암호가 틀려서 가입이 불가능합니다.");
+            }
+        }
+
+        if (userRepository.findByUsername(username).isPresent()) {
             throw new IllegalArgumentException(messageSource.getMessage(
                     "already.exist.username",
                     null,
@@ -101,14 +111,14 @@ public class AuthService {
                 () -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다.")
         );
 
-        if(!user.getRefreshToken().equals(refreshToken)){
+        if (!user.getRefreshToken().equals(refreshToken)) {
             throw new BusinessLogicException("위변조된 토큰입니다.");
         }
 
-        if(jwtProvider.isExpiredToken(subToken)){
+        if (jwtProvider.isExpiredToken(subToken)) {
             throw new BusinessLogicException("만료된 토큰입니다. 다시 로그인해주세요.");
         }
 
-        return jwtProvider.createToken(user,JwtConfig.accessTokenTime);
+        return jwtProvider.createToken(user, JwtConfig.accessTokenTime);
     }
 }
