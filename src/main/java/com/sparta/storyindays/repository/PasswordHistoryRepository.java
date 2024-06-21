@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface PasswordHistoryRepository extends JpaRepository<PasswordHistory, Long> {
-    List<PasswordHistory> findTop3ByUserOrderByChangedAtDesc(User user);
-    List<PasswordHistory> findAllByUserOrderByChangedAtAsc(User user);
+    List<PasswordHistory> findTop3ByUserOrderByCreatedAtDesc(User user);
+    List<PasswordHistory> findAllByUserOrderByCreatedAtAsc(User user);
 }

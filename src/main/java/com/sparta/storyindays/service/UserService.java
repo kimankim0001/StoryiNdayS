@@ -77,7 +77,7 @@ public class UserService {
         }
 
         // 변경할 비밀번호가 최근에 바꾼 적 있는 비밀번호인지 검증
-        List<PasswordHistory> recentPasswords = passwordHistoryRepository.findTop3ByUserOrderByChangedAtDesc(user);
+        List<PasswordHistory> recentPasswords = passwordHistoryRepository.findTop3ByUserOrderByCreatedAtDesc(user);
         for (PasswordHistory passwordHistory : recentPasswords) {
             if (passwordEncoder.matches(passwordUpdateReqDto.getNewPassword(), passwordHistory.getPassword())) {
                 throw new IllegalArgumentException("새로운 비밀번호는 최근 사용한 비밀번호와 동일할 수 없습니다.");
@@ -94,7 +94,7 @@ public class UserService {
         passwordHistoryRepository.save(newHistory);
 
         // 비밀번호 히스토리가 3개를 초과할 경우 가장 오래된 히스토리 삭제
-        List<PasswordHistory> allPasswords = passwordHistoryRepository.findAllByUserOrderByChangedAtAsc(user);
+        List<PasswordHistory> allPasswords = passwordHistoryRepository.findAllByUserOrderByCreatedAtAsc(user);
         if (allPasswords.size() > 3) {
             PasswordHistory oldestHistory = allPasswords.get(0);
             passwordHistoryRepository.delete(oldestHistory);

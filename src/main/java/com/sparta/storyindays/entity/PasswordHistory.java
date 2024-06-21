@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Table(name = "passwordHistory")
-public class PasswordHistory {
+public class PasswordHistory extends Timstamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,9 +19,6 @@ public class PasswordHistory {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
+    @Column(name = "password", nullable = false)
     private String password;
-
-    @CreationTimestamp
-    private Timestamp changedAt;
 }
