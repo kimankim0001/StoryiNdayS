@@ -93,7 +93,7 @@ public class UserService {
         newHistory.setPassword(user.getPassword());
         passwordHistoryRepository.save(newHistory);
 
-        // 비밀번호 히스토리가 3개를 초과할 경우 가장 오래된 히스토리 삭제
+        // 비밀번호 히스토리가 4개를 초과할 경우 가장 오래된 히스토리 삭제
         List<PasswordHistory> allPasswords = passwordHistoryRepository.findAllByUserOrderByCreatedAtAsc(user);
         if (allPasswords.size() > 4) {
             PasswordHistory oldestHistory = allPasswords.get(0);
