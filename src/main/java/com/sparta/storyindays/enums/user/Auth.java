@@ -1,11 +1,9 @@
-package com.sparta.storyindays.dto.user;
+package com.sparta.storyindays.enums.user;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.sparta.storyindays.exception.BusinessLogicException;
 import com.sparta.storyindays.exception.ExceptionCode;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "enum : Auth")

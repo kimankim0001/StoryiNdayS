@@ -18,9 +18,6 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException{
 
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
         ExceptionResDto resDto;
 
         if(request.getAttribute(JwtConfig.EXPIRED_TOKEN) != null && (boolean) request.getAttribute(JwtConfig.EXPIRED_TOKEN)){
@@ -31,7 +28,8 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
             resDto = new ExceptionResDto(HttpServletResponse.SC_FORBIDDEN, "인증되지 않은 사용자입니다.");
         }
 
-        ResponseEntity<ExceptionResDto> responseDto = ResponseEntity.ok().body(resDto);
-        response.getWriter().write(new ObjectMapper().writeValueAsString(responseDto.getBody()));
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(new ObjectMapper().writeValueAsString(resDto));
     }
 }

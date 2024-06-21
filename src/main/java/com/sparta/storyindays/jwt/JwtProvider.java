@@ -1,8 +1,8 @@
 package com.sparta.storyindays.jwt;
 
 import com.sparta.storyindays.config.JwtConfig;
-import com.sparta.storyindays.dto.user.Auth;
-import com.sparta.storyindays.dto.user.State;
+import com.sparta.storyindays.enums.user.Auth;
+import com.sparta.storyindays.enums.user.State;
 import com.sparta.storyindays.entity.User;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,5 +65,14 @@ public class JwtProvider {
         return Jwts.parserBuilder().setSigningKey(JwtConfig.key).build().parseClaimsJws(token).getBody();
     }
 
+    public Date getExpireTimeFromToken(String token) {
+        Claims userInfo = getUserInfoFromToken(token);
+        return userInfo.getExpiration();
+    }
+
+    public boolean isExpiredToken(String token) {
+        Date expiration = getExpireTimeFromToken(token);
+        return expiration.before(new Date());
+    }
 
 }

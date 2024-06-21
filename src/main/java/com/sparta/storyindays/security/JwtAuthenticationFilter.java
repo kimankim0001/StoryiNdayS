@@ -1,6 +1,7 @@
 package com.sparta.storyindays.security;
 
 import com.sparta.storyindays.config.JwtConfig;
+import com.sparta.storyindays.enums.user.State;
 import com.sparta.storyindays.jwt.JwtProvider;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -18,6 +19,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 
 @Slf4j(topic = "jwtAuthenticationFilter")
 @RequiredArgsConstructor
@@ -36,7 +38,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(req,res);
             return;
         }
+
         token = jwtProvider.substringToken(token);
+
         if(!jwtProvider.isTokenValidate(token,req) ){
             log.info("정상 토큰 없는 상태");
             filterChain.doFilter(req,res);
@@ -45,6 +49,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         log.info("정상 토큰 있는 상태");
         Claims userInfo = jwtProvider.getUserInfoFromToken(token);
+
+        String userState = userInfo.get(JwtConfig.USER_STATE_KEY,String.class);
+
+        if(State.BLOCK.getState().equals(userState)){
+            log.info("차단된 사용자");
+            throw new AccessDeniedException("차단되어서 해당 사이트에 접근하실 수 없습니다.");
+        }
 
         setAuthentication(userInfo.getSubject());
 
