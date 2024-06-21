@@ -63,4 +63,12 @@ public class User extends Timstamped {
     public void passwordUpdate(String password) {
         this.password = password;
     }
+
+    public void authUpdate(Auth auth) {
+        this.auth = auth;
+    }
+
+    public void stateUpdate(State state) {
+        this.state = state;
+    }
 }
