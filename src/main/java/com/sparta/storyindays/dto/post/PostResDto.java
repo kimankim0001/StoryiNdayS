@@ -9,9 +9,13 @@ import java.time.LocalDateTime;
 public class PostResDto {
 
     private String name;
+
     private String title;
+
     private String contents;
+
     private LocalDateTime createAt;
+
     private boolean isPinned;
 
     public PostResDto(Post post) {

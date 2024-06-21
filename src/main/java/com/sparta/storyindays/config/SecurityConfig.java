@@ -59,8 +59,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users/reissuance").permitAll()
                         .requestMatchers("/api/admins/users/**").hasRole("ADMIN")
                         .requestMatchers("/api/admins/posts/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admins/posts").hasRole("ADMIN")
                         .anyRequest().authenticated()
-
         );
 
         http.logout(logout -> logout
