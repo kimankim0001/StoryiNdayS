@@ -1,8 +1,14 @@
 package com.sparta.storyindays.service;
 
 import com.sparta.storyindays.dto.user.*;
+import com.sparta.storyindays.dto.user.admin.AdminAuthReqDto;
+import com.sparta.storyindays.dto.user.admin.AdminAuthResDto;
+import com.sparta.storyindays.dto.user.admin.AdminStateReqDto;
+import com.sparta.storyindays.dto.user.admin.AdminStateResDto;
 import com.sparta.storyindays.entity.PasswordHistory;
 import com.sparta.storyindays.entity.User;
+import com.sparta.storyindays.enums.user.Auth;
+import com.sparta.storyindays.enums.user.State;
 import com.sparta.storyindays.repository.PasswordHistoryRepository;
 import com.sparta.storyindays.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -20,12 +26,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final PasswordHistoryRepository passwordHistoryRepository;
 
+    // 프로필 조회
     public ProfileResDto getProfile(Long userId) {
         User user = findById(userId);
         ProfileResDto profileResDto = new ProfileResDto(user);
         return profileResDto;
     }
 
+    // 프로필 수정
     @Transactional
     public ProfileUpdateResDto updateProfile(Long userId, ProfileUpdateReqDto profileUpdateReqDto) {
         User user = findById(userId);
@@ -33,6 +41,25 @@ public class UserService {
         return new ProfileUpdateResDto(user);
     }
 
+    // 권한 변경
+    @Transactional
+    public AdminAuthResDto updateAuth(Long userId, AdminAuthReqDto adminAuthReqDto) {
+        User user = findById(userId);
+        Auth auth = adminAuthReqDto.getAuth();
+        user.authUpdate(auth);
+        return new AdminAuthResDto(user);
+    }
+
+    // 상태 변경
+    @Transactional
+    public AdminStateResDto updateState(Long userId, AdminStateReqDto adminStateReqDto) {
+        User user = findById(userId);
+        State state = adminStateReqDto.getState();
+        user.stateUpdate(state);
+        return new AdminStateResDto(user);
+    }
+
+    // 비밀번호 변경
     @Transactional
     public void updatePassword(Long userId, PasswordUpdateReqDto passwordUpdateReqDto) {
         User user = findById(userId);
