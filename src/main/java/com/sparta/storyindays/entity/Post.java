@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Table(name = "post")
-@EntityListeners(AuditingEntityListener.class)
 public class Post extends Timstamped {
 
     @Id
