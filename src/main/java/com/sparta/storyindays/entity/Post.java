@@ -51,8 +51,8 @@ public class Post extends Timstamped {
         this.user = user;
     }
 
-    public void setPin() {
-        isPinned = true;
+    public void setPin(boolean isPinned) {
+        this.isPinned = isPinned;
     }
 
     public void update(PostReqDto reqDto) {
@@ -62,5 +62,6 @@ public class Post extends Timstamped {
 
     public void addComment(Comment comment) {
         this.commentList.add(comment);
+        //comment에서 setPost해서 외래키 설정해야함
     }
 }

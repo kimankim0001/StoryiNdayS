@@ -24,5 +24,4 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResDto> handleBusinessLogicException(BusinessLogicException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ExceptionResDto(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
     }
-
 }

@@ -1,17 +1,12 @@
 package com.sparta.storyindays.service;
 
-import com.sparta.storyindays.config.JwtConfig;
-import com.sparta.storyindays.dto.post.PostGetResDto;
-import com.sparta.storyindays.dto.post.PostReqDto;
-import com.sparta.storyindays.dto.post.PostResDto;
-import com.sparta.storyindays.dto.post.PostUpdateResDto;
+import com.sparta.storyindays.dto.post.*;
 import com.sparta.storyindays.entity.Post;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.enums.post.PostType;
+import com.sparta.storyindays.enums.user.Auth;
 import com.sparta.storyindays.exception.BusinessLogicException;
-import com.sparta.storyindays.jwt.JwtProvider;
 import com.sparta.storyindays.repository.PostRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,11 +20,10 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserService userService;
-    private final JwtProvider jwtProvider;
 
-    public PostResDto writePost(PostReqDto reqDto, HttpServletRequest request, User user) {
+    public PostResDto writePost(PostReqDto reqDto, User user) {
 
-        User curUser = validUserCheckAndGetUser(request,user);
+        User curUser = userService.findById(user.getId());
         Post post = postRepository.save(reqDto.toPostEntity(curUser));
         PostResDto postReqDto = new PostResDto(post);
 
@@ -47,28 +41,25 @@ public class PostService {
                 , postRepository.findAllByPostTypeAndIsPinned(PostType.NORMAL, true)
                 , postRepository.findAllByPostTypeAndIsPinned(PostType.NORMAL, false, pageable));
 
-        postGetResDto.inputTestData();
         return postGetResDto;
     }
 
     public PostGetResDto getUserPost(String userName, int page, boolean isAsc) {
         Pageable pageable = getPageable(page, isAsc);
 
-        User tempUser = userService.findByUserName(userName);
+        User searchUser = userService.findByUserName(userName);
 
         PostGetResDto postGetResDto = new PostGetResDto(postRepository.findAllByPostType(PostType.NOTICE)
                 , postRepository.findAllByPostTypeAndIsPinned(PostType.NORMAL, true)
-                , postRepository.findAllByPostTypeAndIsPinnedAndUser(PostType.NORMAL, false, tempUser, pageable));
+                , postRepository.findAllByPostTypeAndIsPinnedAndUser(PostType.NORMAL, false, searchUser, pageable));
 
-        postGetResDto.inputTestData();
         return postGetResDto;
     }
 
     @Transactional
-    public PostUpdateResDto updatePost(long postId, PostReqDto reqDto, HttpServletRequest request, User user) {
+    public PostUpdateResDto updatePost(long postId, PostReqDto reqDto, User user) {
 
-        // 본인이 작성한 게시글의 수정인 경우만 인가하도록 조건걸기
-        User curUser = validUserCheckAndGetUser(request,user);
+        User curUser = userService.findById(user.getId());
 
         Post post = findById(postId);
         if(!post.getUser().getUsername().equals(curUser.getUsername()))
@@ -80,9 +71,9 @@ public class PostService {
         return new PostUpdateResDto(post);
     }
 
-    public void deletePost(long postId, HttpServletRequest request, User user) {
+    public void deletePost(long postId, User user) {
 
-        User curUser = validUserCheckAndGetUser(request,user);
+        User curUser = userService.findById(user.getId());
 
         Post post = findById(postId);
         if(!post.getUser().getUsername().equals(curUser.getUsername()))
@@ -90,6 +81,43 @@ public class PostService {
             throw new BusinessLogicException("본인이 작성한 게시글만 삭제할 수 있습니다");
         }
         postRepository.delete(post);
+    }
+
+
+    public PostNotifyResDto writeNoticePost(PostReqDto reqDto, User user) {
+
+        User curUser = userAuthCheck(user);
+
+        Post post = postRepository.save(reqDto.toNoticePostEntity(curUser));
+        PostNotifyResDto postReqDto = new PostNotifyResDto(post);
+
+        return postReqDto;
+    }
+
+    public PostUpdateResDto updatePostByAdmin(long postId, PostReqDto reqDto, User user) {
+
+       userAuthCheck(user);
+
+        Post post = findById(postId);
+        post.update(reqDto);
+
+        return new PostUpdateResDto(post);
+    }
+
+    public void deletePostByAdmin(long postId, User user) {
+
+        userAuthCheck(user);
+        Post post = findById(postId);
+        postRepository.delete(post);
+    }
+
+    @Transactional
+    public PostUpdateResDto pinPost(long postId, boolean isPinned, User user) {
+        userAuthCheck(user);
+        Post post = findById(postId);
+        post.setPin(isPinned);
+
+        return new PostUpdateResDto(post);
     }
 
     public Post findById(long id) {
@@ -106,19 +134,12 @@ public class PostService {
         return pageable;
     }
 
-    public User validUserCheckAndGetUser (HttpServletRequest request, User user) {
-        // 유효한 JWT 토큰을 체크 jwtProvider
-        String accessToken = request.getHeader(JwtConfig.AUTHORIZATION_HEADER);
-        accessToken = jwtProvider.substringToken(accessToken);
-        jwtProvider.isTokenValidate(accessToken, request);
-        String jwtTokenUserName = jwtProvider.getUserInfoFromToken(accessToken).getSubject();
-        // 입력받은 유저를 레포지토리에서 찾아옴
-        User inputUser = userService.findById(user.getId());
-
-        // jwt토큰의 유저정보와 입력받은 유저정보 비교.. 구지 필요한지 고민
-        if(!jwtTokenUserName.equals(inputUser.getUsername())){
-            throw new IllegalArgumentException("유효한 유저가 아닙니다");
+    public User userAuthCheck(User user){
+        User curUser = userService.findById(user.getId());
+        if(curUser.getAuth().equals(Auth.USER)){
+            throw new BusinessLogicException("Admin 권한이 필요합니다");
         }
-        return inputUser;
+
+        return curUser;
     }
 }
