@@ -7,6 +7,7 @@ import com.sparta.storyindays.enums.post.PostType;
 import com.sparta.storyindays.enums.user.Auth;
 import com.sparta.storyindays.exception.BusinessLogicException;
 import com.sparta.storyindays.repository.PostRepository;
+import com.sparta.storyindays.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +33,7 @@ public class PostService {
 
     public PostGetResDto getAllPost(int page, boolean isAsc) {
 
-        Pageable pageable = getPageable(page, isAsc);
+        Pageable pageable = Utils.getPageable(page, isAsc);
 
         // repository에서 공지글 찾아오기
         // repository에서 상단글 찾아오기
@@ -45,7 +46,7 @@ public class PostService {
     }
 
     public PostGetResDto getUserPost(String userName, int page, boolean isAsc) {
-        Pageable pageable = getPageable(page, isAsc);
+        Pageable pageable = Utils.getPageable(page, isAsc);
 
         User searchUser = userService.findByUserName(userName);
 
@@ -122,15 +123,6 @@ public class PostService {
     public Post findById(long id) {
         return postRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않는 게시글 입니다"));
-    }
-
-    public Pageable getPageable(int page, boolean isAsc) {
-        // 정렬방향, 정렬 기준(생성일자 고정), 페이저블 생성
-        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, "createdAt");
-        Pageable pageable = PageRequest.of(page, 5, sort);
-
-        return pageable;
     }
 
 //    public User userAuthCheck(User user){

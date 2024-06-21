@@ -28,7 +28,6 @@ public class CommentService {
         Post post = postService.findById(postId);
         Comment comment = commentRepository.save(new Comment(reqDto.getComment(), post, user));
         return CommentResDto.toDto(commentRepository.save(comment));
-
     }
 
     //댓글 조회
@@ -78,6 +77,4 @@ public class CommentService {
         return commentRepository.findById(commentId).orElseThrow(
                 () -> new IllegalArgumentException("해당 ID에 맞는 댓글이 없습니다."));
     }
-
-
 }

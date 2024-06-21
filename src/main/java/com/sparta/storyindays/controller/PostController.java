@@ -19,7 +19,6 @@ public class PostController {
 
     private final PostService postService;
 
-
     @PostMapping("/posts")
     public ResponseEntity<CommonResDto<PostResDto>> writePost(@RequestBody PostReqDto reqDto,
                                                               @AuthenticationPrincipal UserDetailsImpl userDetails) {
