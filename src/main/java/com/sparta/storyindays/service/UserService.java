@@ -8,6 +8,7 @@ import com.sparta.storyindays.dto.user.admin.AdminStateResDto;
 import com.sparta.storyindays.entity.PasswordHistory;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.enums.user.Auth;
+import com.sparta.storyindays.enums.user.State;
 import com.sparta.storyindays.repository.PasswordHistoryRepository;
 import com.sparta.storyindays.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -51,7 +52,12 @@ public class UserService {
 
     // 상태 변경
     @Transactional
-    public AdminStateResDto upateState(Long userId, AdminStateReqDto adminStateReqDto) {}
+    public AdminStateResDto updateState(Long userId, AdminStateReqDto adminStateReqDto) {
+        User user = findById(userId);
+        State state = adminStateReqDto.getState();
+        user.stateUpdate(state);
+        return new AdminStateResDto(user);
+    }
 
     // 비밀번호 변경
     @Transactional
