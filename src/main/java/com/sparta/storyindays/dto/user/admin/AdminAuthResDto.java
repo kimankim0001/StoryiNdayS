@@ -8,9 +8,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AdminAuthResDto {
+    private String name;
     private Auth auth;
 
     public AdminAuthResDto(User user) {
+        this.name = user.getName();
         this.auth = user.getAuth();
     }
 }

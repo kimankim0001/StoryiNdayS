@@ -8,9 +8,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AdminStateResDto {
+    private String name;
     private State state;
 
     public AdminStateResDto(User user) {
+        this.name = user.getName();
         this.state = user.getState();
     }
 }
