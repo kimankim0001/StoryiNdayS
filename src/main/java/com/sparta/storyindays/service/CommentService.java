@@ -6,12 +6,13 @@ import com.sparta.storyindays.dto.comment.CommentUpdateReqDto;
 import com.sparta.storyindays.entity.Comment;
 import com.sparta.storyindays.entity.Post;
 import com.sparta.storyindays.entity.User;
+import com.sparta.storyindays.enums.user.Auth;
 import com.sparta.storyindays.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,24 +22,25 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostService postService;
 
-    //댓글 작성
     @Transactional
     public CommentResDto createComment(long postId, CommentCreateReqDto reqDto, User user) {
 
         Post post = postService.findById(postId);
         Comment comment = commentRepository.save(new Comment(reqDto.getComment(), post, user));
-        return CommentResDto.toDto(commentRepository.save(comment));
+        return new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment());
     }
 
-    //댓글 조회
     public List<CommentResDto> getAllComment(long postId) {
 
         postService.findById(postId);
-        List<Comment> comments = commentRepository.findAll();
-        return comments.stream().sorted(Comparator.comparing(Comment::getCreatedAt).reversed()).map(CommentResDto::toDto).toList();
+        List<Comment> comments = commentRepository.findAllByPostId(postId);
+        List<CommentResDto> commentResDtos = new ArrayList<>();
+        for (Comment comment : comments) {
+            commentResDtos.add(new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment()));
+        }
+        return commentResDtos;
     }
 
-    //댓글 수정
     @Transactional
     public CommentResDto updateComment(long postId, long commentId, CommentUpdateReqDto reqDto, User user) {
 
@@ -53,10 +55,9 @@ public class CommentService {
 
         comment.updateComment(reqDto.getComment());
 
-        return CommentResDto.toDto(comment);
+        return new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment());
     }
 
-    //댓글 삭제
     @Transactional
     public void deleteComment(long postId, long commentId, User user) {
 
@@ -71,10 +72,39 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
-    //댓글찾는 메서드
+    @Transactional
+    public CommentResDto updateCommentAdmin(long postId, long commentId, CommentUpdateReqDto reqDto, User user) {
+        postService.findById(postId);
+        Comment comment = findComment(commentId);
+        Auth loginAuth = user.getAuth();
+
+        if (!loginAuth.equals(Auth.ADMIN)) {
+            throw new IllegalArgumentException("관리자만 수정 가능합니다.");
+        }
+
+        comment.updateComment(reqDto.getComment());
+
+        return new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment());
+    }
+
+    @Transactional
+    public void deleteCommentAdmin(long postId, long commentId, User user) {
+
+        postService.findById(postId);
+        Comment comment = findComment(commentId);
+        Auth loginAuth = user.getAuth();
+
+        if (!loginAuth.equals(Auth.ADMIN)) {
+            throw new IllegalArgumentException("관리자만 삭제 가능합니다.");
+        }
+        commentRepository.delete(comment);
+    }
+
     public Comment findComment(long commentId) {
 
         return commentRepository.findById(commentId).orElseThrow(
                 () -> new IllegalArgumentException("해당 ID에 맞는 댓글이 없습니다."));
     }
+
+
 }
