@@ -28,4 +28,6 @@ public class SignupReqDto {
 
     @NotNull(message = "auth 값이 필수로 들어있어야 합니다.")
     private Auth authType;
+
+    private String authToken ="";
 }

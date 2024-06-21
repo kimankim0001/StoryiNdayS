@@ -25,4 +25,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ExceptionResDto(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
     }
 
+    //MethodArgumentNotValidException 추가할 것
+
 }
