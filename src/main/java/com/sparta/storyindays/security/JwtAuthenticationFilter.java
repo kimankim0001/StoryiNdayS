@@ -33,26 +33,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = jwtProvider.getJwtFromHeader(req, JwtConfig.AUTHORIZATION_HEADER);
 
-        if(!StringUtils.hasText(token)){
+        if (!StringUtils.hasText(token)) {
             log.info("토큰 아예 없는 경우");
-            filterChain.doFilter(req,res);
+            filterChain.doFilter(req, res);
             return;
         }
 
         token = jwtProvider.substringToken(token);
 
-        if(!jwtProvider.isTokenValidate(token,req) ){
+        if (!jwtProvider.isTokenValidate(token, req)) {
             log.info("정상 토큰 없는 상태");
-            filterChain.doFilter(req,res);
+            filterChain.doFilter(req, res);
             return;
         }
 
         log.info("정상 토큰 있는 상태");
         Claims userInfo = jwtProvider.getUserInfoFromToken(token);
 
-        String userState = userInfo.get(JwtConfig.USER_STATE_KEY,String.class);
+        String userState = userInfo.get(JwtConfig.USER_STATE_KEY, String.class);
 
-        if(State.BLOCK.getState().equals(userState)){
+        if (State.BLOCK.getState().equals(userState)) {
             log.info("차단된 사용자");
             throw new AccessDeniedException("차단되어서 해당 사이트에 접근하실 수 없습니다.");
         }
@@ -60,6 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         setAuthentication(userInfo.getSubject());
 
         filterChain.doFilter(req, res);
+
     }
 
     public void setAuthentication(String username) {
