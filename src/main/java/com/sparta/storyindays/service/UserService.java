@@ -9,10 +9,14 @@ import com.sparta.storyindays.entity.PasswordHistory;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.enums.user.Auth;
 import com.sparta.storyindays.enums.user.State;
+import com.sparta.storyindays.exception.BusinessLogicException;
 import com.sparta.storyindays.repository.PasswordHistoryRepository;
 import com.sparta.storyindays.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +40,19 @@ public class UserService {
     // 프로필 수정
     @Transactional
     public ProfileUpdateResDto updateProfile(Long userId, ProfileUpdateReqDto profileUpdateReqDto) {
+        User currentUser = getCurrentUser();
+        if (!currentUser.getId().equals(userId)) {
+            throw new IllegalArgumentException("본인의 프로필만 수정할 수 있습니다.");
+        }
+
+        User user = findById(userId);
+        user.update(profileUpdateReqDto);
+        return new ProfileUpdateResDto(user);
+    }
+
+    // 회원 정보 수정
+    @Transactional
+    public ProfileUpdateResDto adminUpdateProfile(Long userId, ProfileUpdateReqDto profileUpdateReqDto) {
         User user = findById(userId);
         user.update(profileUpdateReqDto);
         return new ProfileUpdateResDto(user);
@@ -110,5 +127,11 @@ public class UserService {
     public User findByUserName(String userName) {
         return userRepository.findByUsername(userName).orElseThrow(() ->
                 new IllegalArgumentException("해당 사용자는 존재하지 않습니다"));
+    }
+
+    private User getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("현재 사용자를 찾을 수 없습니다."));
     }
 }
