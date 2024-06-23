@@ -3,7 +3,6 @@ package com.sparta.storyindays.entity;
 import com.sparta.storyindays.dto.post.PostReqDto;
 import com.sparta.storyindays.enums.post.PostType;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,11 +39,10 @@ public class Post extends Timstamped {
     @OneToMany(mappedBy = "post", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private final List<Comment> commentList = new ArrayList<>();
 
-    @Builder
-    public Post(String title, String contents, boolean isPinned, PostType postType, User user) {
+    public Post(String title, String contents, boolean b, PostType postType, User user) {
         this.title = title;
         this.contents = contents;
-        this.isPinned = isPinned;
+        this.isPinned = b;
         this.postType = postType;
         this.user = user;
     }

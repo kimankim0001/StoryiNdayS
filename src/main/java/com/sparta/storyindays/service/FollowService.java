@@ -25,7 +25,7 @@ public class FollowService {
 
         Follow newFollow = new Follow(true, user.getUsername(), followeeUser);
 
-        if(!isAleadyFollow(followeeId, user)) {
+        if (!isAleadyFollow(followeeId, user)) {
             followRepository.save(newFollow);
         }
 
@@ -39,28 +39,26 @@ public class FollowService {
         Follow cancleFollow = followRepository.findByFollowUserIdAndFolloweeUser(user.getUsername(), followeeUser).orElseThrow(() ->
                 new BusinessLogicException("찾을수 없는 Follow ID 입니다"));
 
-        if(cancleFollow.isFollow()) {
+        if (cancleFollow.isFollow()) {
             cancleFollow.changeFollow(false);
-        }
-        else {
+        } else {
             throw new BusinessLogicException("팔로우 되어있지않은 유저입니다!");
         }
 
         return new ProfileUpdateResDto(cancleFollow.getFolloweeUser());
     }
 
-    public List<Follow> getFolloweeList(String userName){
+    public List<Follow> getFolloweeList(String userName) {
         return followRepository.findAllByFollowUserId(userName);
     }
-    
-    public boolean isAleadyFollow(long followeeId, User user){
+
+    public boolean isAleadyFollow(long followeeId, User user) {
         User followeeUser = userService.findById(followeeId);
         Optional<Follow> curFollow = followRepository.findByFollowUserIdAndFolloweeUser(user.getUsername(), followeeUser);
-        if(curFollow.isPresent()){
-            if(curFollow.get().isFollow()){
+        if (curFollow.isPresent()) {
+            if (curFollow.get().isFollow()) {
                 throw new BusinessLogicException("이미 팔로우 하고있는 유저입니다!");
-            }
-            else {
+            } else {
                 curFollow.get().changeFollow(true);
                 return true;
             }

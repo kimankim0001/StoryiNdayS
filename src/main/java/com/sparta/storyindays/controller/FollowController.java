@@ -24,7 +24,7 @@ public class FollowController {
 
         ProfileUpdateResDto updateResDto = followService.followUser(userId, userDetails.getUser());
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
-                ,updateResDto.getName() + "님을 팔로우하였습니다!"
+                , updateResDto.getName() + "님을 팔로우하였습니다!"
                 , null));
     }
 
@@ -33,7 +33,7 @@ public class FollowController {
 
         ProfileUpdateResDto updateResDto = followService.followCancle(userId, userDetails.getUser());
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
-                ,updateResDto.getName() + "님의 팔로우를 취소하였습니다!"
+                , updateResDto.getName() + "님의 팔로우를 취소하였습니다!"
                 , null));
     }
 }

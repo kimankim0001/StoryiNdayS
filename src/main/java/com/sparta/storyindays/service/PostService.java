@@ -131,7 +131,7 @@ public class PostService {
         List<Follow> followeeList = followService.getFolloweeList(user.getUsername());
         List<Post> postList = new ArrayList<>();
         for (Follow follow : followeeList) {
-            if(follow.isFollow()){
+            if (follow.isFollow()) {
                 postList.addAll(postRepository.findAllByUser(follow.getFolloweeUser()));
             }
         }

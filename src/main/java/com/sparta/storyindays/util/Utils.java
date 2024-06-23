@@ -1,6 +1,5 @@
 package com.sparta.storyindays.util;
 
-import com.sparta.storyindays.entity.Post;
 import org.springframework.data.domain.*;
 
 import java.util.List;
@@ -15,8 +14,8 @@ public class Utils {
         return pageable;
     }
 
-    public static <T> Page<T> getCustomPage(Pageable pageable, List<T> pagedList){
-        int start = (int)pageable.getOffset();
+    public static <T> Page<T> getCustomPage(Pageable pageable, List<T> pagedList) {
+        int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), pagedList.size());
         Page<T> pagingList = new PageImpl<>(pagedList.subList(start, end), pageable, pagedList.size());
         return pagingList;

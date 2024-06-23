@@ -7,7 +7,6 @@ import com.sparta.storyindays.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -119,7 +118,7 @@ public class PostController {
             , @RequestParam("isAsc") boolean isAsc
             , @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        Page<PostUpdateResDto> updateResDtoList = postService.getFollowPost(page - 1,isAsc,userDetails.getUser());
+        Page<PostUpdateResDto> updateResDtoList = postService.getFollowPost(page - 1, isAsc, userDetails.getUser());
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
                 , "팔로워한 유저들의 게시글 조회에 성공했습니다!"
                 , updateResDtoList));
