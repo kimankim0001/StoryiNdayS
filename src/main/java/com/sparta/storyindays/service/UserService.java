@@ -1,20 +1,19 @@
 package com.sparta.storyindays.service;
 
 import com.sparta.storyindays.dto.user.*;
-import com.sparta.storyindays.dto.user.admin.AdminAuthReqDto;
-import com.sparta.storyindays.dto.user.admin.AdminAuthResDto;
-import com.sparta.storyindays.dto.user.admin.AdminStateReqDto;
-import com.sparta.storyindays.dto.user.admin.AdminStateResDto;
+import com.sparta.storyindays.dto.user.admin.*;
 import com.sparta.storyindays.entity.PasswordHistory;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.enums.user.Auth;
 import com.sparta.storyindays.enums.user.State;
-import com.sparta.storyindays.exception.BusinessLogicException;
 import com.sparta.storyindays.repository.PasswordHistoryRepository;
 import com.sparta.storyindays.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -133,5 +132,16 @@ public class UserService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("현재 사용자를 찾을 수 없습니다."));
+    }
+
+    public Page<AdminUsersResDto> getAllUserProfile(int page, int size, String sortBy, boolean isAsc) {
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction,sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<User> userList;
+        userList = userRepository.findAll(pageable);
+
+        return userList.map(AdminUsersResDto::new);
     }
 }

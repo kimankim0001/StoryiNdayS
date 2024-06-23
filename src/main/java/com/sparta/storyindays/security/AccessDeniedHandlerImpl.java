@@ -3,6 +3,7 @@ package com.sparta.storyindays.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.storyindays.config.JwtConfig;
 import com.sparta.storyindays.dto.ExceptionResDto;
+import com.sparta.storyindays.enums.user.Auth;
 import com.sparta.storyindays.enums.user.State;
 import com.sparta.storyindays.jwt.JwtProvider;
 import io.jsonwebtoken.Claims;
@@ -42,6 +43,13 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         if (State.BLOCK.getState().equals(state)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN); //403
             resDto = new ExceptionResDto(HttpServletResponse.SC_FORBIDDEN, accessDeniedException.getMessage());
+        }
+
+        String auth = claims.get(JwtConfig.AUTHORIZATION_KEY, String.class);
+
+        if(Auth.USER.getUser().equals(auth)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            resDto = new ExceptionResDto(HttpServletResponse.SC_FORBIDDEN, "ADMIN만 해당 페이지에 접근할 수 있습니다.");
         }
 
         response.setCharacterEncoding("UTF-8");

@@ -59,7 +59,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users/reissuance").permitAll()
                         .requestMatchers("/api/admins/users/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/admins/posts/**").hasAuthority("ADMIN")
-                        .requestMatchers("/api/admins/posts").hasAuthority("ADMIN")
                         .anyRequest().authenticated()
         );
 
