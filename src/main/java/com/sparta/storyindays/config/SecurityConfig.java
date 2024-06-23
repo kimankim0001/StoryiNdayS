@@ -57,6 +57,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/posts").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/reissuance").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/follows/**").permitAll()
 //                        .requestMatchers("/api/admins/users/**").hasRole("ADMIN")
 //                        .requestMatchers("/api/admins/posts/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

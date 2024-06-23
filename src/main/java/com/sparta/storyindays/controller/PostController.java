@@ -6,6 +6,8 @@ import com.sparta.storyindays.security.UserDetailsImpl;
 import com.sparta.storyindays.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,7 +32,8 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<CommonResDto<PostGetResDto>> getAllPost(@RequestParam("page") int page
+    public ResponseEntity<CommonResDto<PostGetResDto>> getAllPost(
+            @RequestParam("page") int page
             , @RequestParam("isAsc") boolean isAsc) {
 
         PostGetResDto updateResDtoList = postService.getAllPost(page - 1, isAsc);
@@ -108,5 +111,17 @@ public class PostController {
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
                 , "관리자가 게시글 고정에 성공했습니다"
                 , updateResDto));
+    }
+
+    @GetMapping("/posts/follows")
+    public ResponseEntity<CommonResDto<Page<PostUpdateResDto>>> getFollowPost(
+            @RequestParam("page") int page
+            , @RequestParam("isAsc") boolean isAsc
+            , @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        Page<PostUpdateResDto> updateResDtoList = postService.getFollowPost(page - 1,isAsc,userDetails.getUser());
+        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
+                , "팔로워한 유저들의 게시글 조회에 성공했습니다!"
+                , updateResDtoList));
     }
 }
