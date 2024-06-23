@@ -61,4 +61,13 @@ public class UserController {
         ,"해당 유저계정의 상태가 변경되었습니다."
         , responseDto));
     }
+
+    @PutMapping("/admins/users/{userId}/profile")
+    public ResponseEntity<CommonResDto<ProfileUpdateResDto>> adminUpdateProfile(@PathVariable Long userId, @RequestBody @Valid ProfileUpdateReqDto reqDto) {
+
+        ProfileUpdateResDto responseDto = userService.adminUpdateProfile(userId, reqDto);
+        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
+                ,userService.findById(userId).getUsername() + "회원님의 정보가 수정되었습니다."
+                , responseDto));
+    }
 }
