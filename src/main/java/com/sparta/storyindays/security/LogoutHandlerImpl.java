@@ -22,7 +22,6 @@ public class LogoutHandlerImpl implements LogoutHandler {
 
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
-    private final LogoutExceptionHandler logoutExceptionHandler;
 
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         log.info("로그아웃 시도");
@@ -37,9 +36,7 @@ public class LogoutHandlerImpl implements LogoutHandler {
         token = jwtProvider.substringToken(token);
         Claims userInfo = jwtProvider.getUserInfoFromToken(token);
 
-        User user = userRepository.findByUsername(userInfo.getSubject()).orElseThrow(
-                () -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다.")
-        );
+        User user = userRepository.findByUsername(userInfo.getSubject()).orElseThrow(() -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다."));
 
         user.updateRefreshToken("");
         userRepository.save(user);
