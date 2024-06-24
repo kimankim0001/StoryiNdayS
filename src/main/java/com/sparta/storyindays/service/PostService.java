@@ -112,7 +112,6 @@ public class PostService {
         postRepository.delete(post);
     }
 
-
     public PostNotifyResDto writeNoticePost(PostReqDto reqDto, User user) {
 
         User curUser = userService.findById(user.getId());
@@ -123,6 +122,7 @@ public class PostService {
         return postReqDto;
     }
 
+    @Transactional
     public PostUpdateResDto updatePostByAdmin(long postId, PostReqDto reqDto) {
 
         Post post = findById(postId);
