@@ -42,6 +42,9 @@ public class Post extends Timstamped {
     @OneToMany(mappedBy = "post", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private final List<Comment> commentList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private final List<PostLike> postLikeList = new ArrayList<>();
+
     @Builder
     public Post(String title, String contents, boolean isPinned, PostType postType, User user) {
         this.title = title;
