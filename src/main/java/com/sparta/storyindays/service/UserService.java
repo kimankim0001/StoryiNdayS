@@ -105,7 +105,7 @@ public class UserService {
         // 현재 비밀번호가 사용자의 비밀번호와 맞는지 검증
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new IllegalArgumentException(messageSource.getMessage(
-                    "no.match.user.passworld",
+                    "no.match.user.password",
                     null,
                     "The current password and the user's password do not match.",
                     Locale.getDefault()
