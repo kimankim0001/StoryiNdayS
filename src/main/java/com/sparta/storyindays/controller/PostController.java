@@ -41,6 +41,15 @@ public class PostController {
                 , updateResDtoList));
     }
 
+    @GetMapping("/posts/{postId}")
+    public ResponseEntity<CommonResDto<PostCommentResDto>> getPost(@PathVariable long postId){
+
+        PostCommentResDto resDto = postService.getPost(postId);
+        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
+                , "게시글 조회에 성공했습니다!"
+                , resDto));
+    }
+
     @GetMapping("/posts/users")
     public ResponseEntity<CommonResDto<PostGetResDto>> getUserPost(
             @RequestParam("userName") String userName
