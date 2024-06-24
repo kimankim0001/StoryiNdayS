@@ -66,7 +66,12 @@ public class AuthService {
         //admin으로 회원가입시
         if (Auth.ADMIN.equals(auth)) {
             if(!ADMIN_TOKEN.equals(signupReqDto.getAuthToken())){
-                throw new BusinessLogicException("관리자 암호가 틀려서 가입이 불가능합니다.");
+                throw new BusinessLogicException(messageSource.getMessage(
+                        "invalid.admin.key",
+                        null,
+                        "관리자 암호가 틀려서 가입이 불가능합니다.",
+                        Locale.getDefault()
+                ));
             }
         }
 
@@ -101,6 +106,7 @@ public class AuthService {
                 )
         );
 
+        log.info("로그인 시도 완료");
         User user = ((UserDetailsImpl) authentication.getPrincipal()).getUser();
 
         String accessToken = jwtProvider.createToken(user, JwtConfig.accessTokenTime);
@@ -115,22 +121,36 @@ public class AuthService {
         return tokens;
     }
 
-
     public String reissue(String refreshToken) {
         log.info("토큰 재발행 시도");
 
         String subToken = jwtProvider.substringToken(refreshToken);
         Claims userInfo = jwtProvider.getUserInfoFromToken(subToken);
         User user = userRepository.findByUsername(userInfo.getSubject()).orElseThrow(
-                () -> new IllegalArgumentException("해당 사용자가 존재하지 않습니다.")
+                () -> new IllegalArgumentException(messageSource.getMessage(
+                        "no.exist.user",
+                        null,
+                        "해당 사용자는 존재하지 않습니다.",
+                        Locale.getDefault()
+                ))
         );
 
         if (!user.getRefreshToken().equals(refreshToken)) {
-            throw new BusinessLogicException("위변조된 토큰입니다.");
+            throw new BusinessLogicException(messageSource.getMessage(
+                    "invalid.refresh.token",
+                    null,
+                    "위변조된 리프레시 토큰입니다.",
+                    Locale.getDefault()
+            ));
         }
 
         if (jwtProvider.isExpiredToken(subToken)) {
-            throw new BusinessLogicException("만료된 토큰입니다. 다시 로그인해주세요.");
+            throw new BusinessLogicException(messageSource.getMessage(
+                    "expired.token.re.login",
+                    null,
+                    "만료된 토큰입니다. 다시 로그인해주세요.",
+                    Locale.getDefault()
+            ));
         }
 
         return jwtProvider.createToken(user, JwtConfig.accessTokenTime);
