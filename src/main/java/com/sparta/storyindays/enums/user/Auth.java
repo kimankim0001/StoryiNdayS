@@ -3,7 +3,6 @@ package com.sparta.storyindays.enums.user;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.sparta.storyindays.exception.BusinessLogicException;
-import com.sparta.storyindays.exception.ExceptionCode;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j(topic = "enum : Auth")
@@ -35,6 +34,6 @@ public enum Auth {
             }
         }
         log.debug("EnumCollection.Auth.from() exception occur authType: {}", authType);
-        throw new BusinessLogicException(ExceptionCode.INVALID_AUTHTYPE.getCode());
+        throw new BusinessLogicException("해당 type의 권한은 존재하지 않습니다.");
     }
 }

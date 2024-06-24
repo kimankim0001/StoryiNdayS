@@ -56,11 +56,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("차단된 사용자");
             throw new AccessDeniedException("차단되어서 해당 사이트에 접근하실 수 없습니다.");
         }
-
         setAuthentication(userInfo.getSubject());
 
         filterChain.doFilter(req, res);
-
     }
 
     public void setAuthentication(String username) {
