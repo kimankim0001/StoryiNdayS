@@ -6,10 +6,12 @@ import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.exception.BusinessLogicException;
 import com.sparta.storyindays.repository.FollowRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -18,11 +20,21 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final UserService userService;
+    private final MessageSource messageSource;
 
     @Transactional
     public ProfileUpdateResDto followUser(long followeeId, User user) {
 
+
         User followeeUser = userService.findById(followeeId);
+        if(followeeUser.getUsername().equals(user.getUsername())) {
+            throw new BusinessLogicException(messageSource.getMessage(
+                    "no.follow.me",
+                    null,
+                    "Wrong Request",
+                    Locale.getDefault()
+            ));
+        }
 
         Follow newFollow = new Follow(true, user.getUsername(), followeeUser);
 
@@ -38,12 +50,22 @@ public class FollowService {
 
         User followeeUser = userService.findById(followeeId);
         Follow cancleFollow = followRepository.findByFollowUserIdAndFolloweeUser(user.getUsername(), followeeUser).orElseThrow(() ->
-                new BusinessLogicException("찾을수 없는 Follow ID 입니다"));
+        new BusinessLogicException(messageSource.getMessage(
+                "no.exist.follow",
+                null,
+                "Wrong Request",
+                Locale.getDefault()
+        )));
 
         if (cancleFollow.isFollow()) {
             cancleFollow.changeFollow(false);
         } else {
-            throw new BusinessLogicException("팔로우 되어있지않은 유저입니다!");
+            throw new BusinessLogicException(messageSource.getMessage(
+                    "no.follow.user",
+                    null,
+                    "Wrong Request",
+                    Locale.getDefault()
+            ));
         }
 
         return new ProfileUpdateResDto(cancleFollow.getFolloweeUser());
@@ -58,7 +80,12 @@ public class FollowService {
         Optional<Follow> curFollow = followRepository.findByFollowUserIdAndFolloweeUser(user.getUsername(), followeeUser);
         if (curFollow.isPresent()) {
             if (curFollow.get().isFollow()) {
-                throw new BusinessLogicException("이미 팔로우 하고있는 유저입니다!");
+                throw new BusinessLogicException(messageSource.getMessage(
+                        "already.follow.user",
+                        null,
+                        "Wrong Request",
+                        Locale.getDefault()
+                ));
             } else {
                 curFollow.get().changeFollow(true);
                 return true;
