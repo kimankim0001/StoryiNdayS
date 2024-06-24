@@ -22,6 +22,7 @@ public class JwtConfig {
     public static final String AUTHORIZATION_HEADER = "authorization";
     public static final String ACCESS_TOKEN_HEADER = "accessToken";
     public static final String REFRESH_TOKEN_HEADER = "refreshToken";
+    public static final String KAKAO_TOKEN_HEADER = "kakaoAccessToken";
     public static final String EXPIRED_TOKEN = "expiredToken";
     public static final String AUTHORIZATION_KEY = "auth";
     public static final String USER_STATE_KEY = "state";
