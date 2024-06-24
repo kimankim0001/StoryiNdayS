@@ -1,6 +1,7 @@
 package com.sparta.storyindays.service;
 
 import com.sparta.storyindays.dto.post.*;
+import com.sparta.storyindays.entity.Follow;
 import com.sparta.storyindays.entity.Post;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.enums.post.PostType;
@@ -9,11 +10,14 @@ import com.sparta.storyindays.exception.BusinessLogicException;
 import com.sparta.storyindays.repository.PostRepository;
 import com.sparta.storyindays.util.Utils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +25,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserService userService;
+    private final FollowService followService;
 
     public PostResDto writePost(PostReqDto reqDto, User user) {
 
@@ -63,8 +68,7 @@ public class PostService {
         User curUser = userService.findById(user.getId());
 
         Post post = findById(postId);
-        if(!post.getUser().getUsername().equals(curUser.getUsername()))
-        {
+        if (!post.getUser().getUsername().equals(curUser.getUsername())) {
             throw new BusinessLogicException("본인이 작성한 게시글만 수정할 수 있습니다");
         }
 
@@ -77,10 +81,10 @@ public class PostService {
         User curUser = userService.findById(user.getId());
 
         Post post = findById(postId);
-        if(!post.getUser().getUsername().equals(curUser.getUsername())) {
+        if (!post.getUser().getUsername().equals(curUser.getUsername())) {
             throw new BusinessLogicException("본인이 작성한 게시글만 삭제할 수 있습니다");
         }
-        if(post.getUser().getAuth().equals(Auth.USER) && post.getPostType().equals(PostType.NOTICE)) {
+        if (post.getUser().getAuth().equals(Auth.USER) && post.getPostType().equals(PostType.NOTICE)) {
             throw new BusinessLogicException("공지는 관리자만 삭제할 수 있습니다");
         }
         postRepository.delete(post);
@@ -120,17 +124,29 @@ public class PostService {
         return new PostUpdateResDto(post);
     }
 
+    public Page<PostUpdateResDto> getFollowPost(int page, boolean isAsc, User user) {
+
+        Pageable pageable = Utils.getPageable(page, isAsc);
+
+        List<Follow> followeeList = followService.getFolloweeList(user.getUsername());
+        List<Post> postList = new ArrayList<>();
+        for (Follow follow : followeeList) {
+            if (follow.isFollow()) {
+                postList.addAll(postRepository.findAllByUser(follow.getFolloweeUser()));
+            }
+        }
+
+        List<Post> sortedPostList = isAsc ?
+                postList.stream().sorted(Comparator.comparing(Post::getCreatedAt).reversed()).toList() :
+                postList.stream().sorted(Comparator.comparing(Post::getCreatedAt)).toList();
+
+
+        Page<Post> pagingList = Utils.getCustomPage(pageable, sortedPostList);
+        return pagingList.map(PostUpdateResDto::new);
+    }
+
     public Post findById(long id) {
         return postRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("존재하지 않는 게시글 입니다"));
     }
-
-//    public User userAuthCheck(User user){
-//        User curUser = userService.findById(user.getId());
-//        if(curUser.getAuth().equals(Auth.USER)){
-//            throw new BusinessLogicException("Admin 권한이 필요합니다");
-//        }
-//
-//        return curUser;
-//    }
 }
