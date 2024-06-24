@@ -137,7 +137,7 @@ public class AuthService {
     }
 
     @Transactional
-    public String kakaoLogin(String kakaoAccessToken) throws JsonProcessingException {
+    public List<String> kakaoLogin(String kakaoAccessToken) throws JsonProcessingException {
         KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(kakaoAccessToken);
         log.info("kakaoUserInfo 발급 완료");
         User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
@@ -147,7 +147,11 @@ public class AuthService {
         kakaoUser.updateRefreshToken(refreshToken);
         log.info("로그인 완료");
 
-        return accessToken;
+        List<String> tokens = new ArrayList<>();
+        tokens.add(accessToken);
+        tokens.add(refreshToken);
+
+        return tokens;
     }
 
     private KakaoUserInfoDto getKakaoUserInfo(String accessToken) throws JsonProcessingException {
