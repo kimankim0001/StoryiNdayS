@@ -22,7 +22,11 @@ public class FollowService {
     @Transactional
     public ProfileUpdateResDto followUser(long followeeId, User user) {
 
+
         User followeeUser = userService.findById(followeeId);
+        if(followeeUser.getUsername().equals(user.getUsername())) {
+            throw new BusinessLogicException("자신은 팔로우 할 수 없습니다");
+        }
 
         Follow newFollow = new Follow(true, user.getUsername(), followeeUser);
 
