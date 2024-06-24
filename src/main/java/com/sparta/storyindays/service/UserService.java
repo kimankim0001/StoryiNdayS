@@ -10,6 +10,7 @@ import com.sparta.storyindays.repository.PasswordHistoryRepository;
 import com.sparta.storyindays.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordHistoryRepository passwordHistoryRepository;
+    private final MessageSource messageSource;
 
     // 프로필 조회
     public ProfileResDto getProfile(Long userId) {
@@ -41,7 +44,12 @@ public class UserService {
     public ProfileUpdateResDto updateProfile(Long userId, ProfileUpdateReqDto profileUpdateReqDto) {
         User currentUser = getCurrentUser();
         if (!currentUser.getId().equals(userId)) {
-            throw new IllegalArgumentException("본인의 프로필만 수정할 수 있습니다.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    "only.myacount.can.change.profile",
+                    null,
+                    "You can only modify the profile of your account.",
+                    Locale.getDefault()
+            ));
         }
 
         User user = findById(userId);
@@ -78,25 +86,52 @@ public class UserService {
     // 비밀번호 변경
     @Transactional
     public void updatePassword(Long userId, PasswordUpdateReqDto passwordUpdateReqDto) {
+
         User user = findById(userId);
+        User currentUser = getCurrentUser();
         String currentPassword = passwordUpdateReqDto.getCurrentPassword();
         String newPassword = passwordUpdateReqDto.getNewPassword();
 
+        // 현재 로그인한 계정이 맞는지 검증
+        if (!currentUser.getId().equals(userId)) {
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    "only.myacount.can.change.password",
+                    null,
+                    "You can only change your password.",
+                    Locale.getDefault()
+            ));
+        }
+
         // 현재 비밀번호가 사용자의 비밀번호와 맞는지 검증
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new IllegalArgumentException("현재 비밀번호와 사용자의 비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    "no.match.user.password",
+                    null,
+                    "The current password and the user's password do not match.",
+                    Locale.getDefault()
+            ));
         }
 
         // 변경할 비밀번호와 현재 비밀번호가 동일한지 검증
         if (passwordEncoder.matches(newPassword, user.getPassword())) {
-            throw new IllegalArgumentException("동일한 비밀번호로는 변경할 수 없습니다.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    "current.and.new.password.same",
+                    null,
+                    "You cannot change it with the same password.",
+                    Locale.getDefault()
+            ));
         }
 
         // 변경할 비밀번호가 최근에 바꾼 적 있는 비밀번호인지 검증
         List<PasswordHistory> recentPasswords = passwordHistoryRepository.findTop4ByUserOrderByCreatedAtDesc(user);
         for (PasswordHistory passwordHistory : recentPasswords) {
             if (passwordEncoder.matches(passwordUpdateReqDto.getNewPassword(), passwordHistory.getPassword())) {
-                throw new IllegalArgumentException("새로운 비밀번호는 최근 사용한 비밀번호와 동일할 수 없습니다.");
+                throw new IllegalArgumentException(messageSource.getMessage(
+                        "new.and.recent.password.same",
+                        null,
+                        "The new password cannot be the same as the password you recently used.",
+                        Locale.getDefault()
+                ));
             }
         }
 
@@ -119,19 +154,34 @@ public class UserService {
 
     public User findById(Long userId) {
         return userRepository.findById(userId).orElseThrow(() ->
-                new IllegalArgumentException("해당 사용자는 존재하지 않습니다.")
+                new IllegalArgumentException(messageSource.getMessage(
+                        "no.exist.user",
+                        null,
+                        "This user does not exist.",
+                        Locale.getDefault()
+                ))
         );
     }
 
     public User findByUserName(String userName) {
         return userRepository.findByUsername(userName).orElseThrow(() ->
-                new IllegalArgumentException("해당 사용자는 존재하지 않습니다"));
+                new IllegalArgumentException(messageSource.getMessage(
+                        "no.exist.user",
+                        null,
+                        "This user does not exist.",
+                        Locale.getDefault()
+                )));
     }
 
     private User getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("현재 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new UsernameNotFoundException(messageSource.getMessage(
+                        "not.found.current.user",
+                        null,
+                        "The current user could not be found.",
+                        Locale.getDefault()
+                )));
     }
 
     public Page<AdminUsersResDto> getAllUserProfile(int page, int size, String sortBy, boolean isAsc) {

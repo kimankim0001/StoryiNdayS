@@ -1,12 +1,15 @@
 package com.sparta.storyindays.service;
 
+import com.sparta.storyindays.dto.comment.CommentResDto;
 import com.sparta.storyindays.dto.post.*;
+import com.sparta.storyindays.entity.Comment;
 import com.sparta.storyindays.entity.Follow;
 import com.sparta.storyindays.entity.Post;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.enums.post.PostType;
 import com.sparta.storyindays.enums.user.Auth;
 import com.sparta.storyindays.exception.BusinessLogicException;
+import com.sparta.storyindays.repository.CommentRepository;
 import com.sparta.storyindays.repository.PostRepository;
 import com.sparta.storyindays.util.Utils;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserService userService;
     private final FollowService followService;
+    private final CommentRepository commentRepository;
 
     public PostResDto writePost(PostReqDto reqDto, User user) {
 
@@ -126,8 +130,6 @@ public class PostService {
 
     public Page<PostUpdateResDto> getFollowPost(int page, boolean isAsc, User user) {
 
-        Pageable pageable = Utils.getPageable(page, isAsc);
-
         List<Follow> followeeList = followService.getFolloweeList(user.getUsername());
         List<Post> postList = new ArrayList<>();
         for (Follow follow : followeeList) {
@@ -140,9 +142,24 @@ public class PostService {
                 postList.stream().sorted(Comparator.comparing(Post::getCreatedAt).reversed()).toList() :
                 postList.stream().sorted(Comparator.comparing(Post::getCreatedAt)).toList();
 
+        Pageable pageable = Utils.getPageable(page, isAsc);
 
         Page<Post> pagingList = Utils.getCustomPage(pageable, sortedPostList);
         return pagingList.map(PostUpdateResDto::new);
+    }
+
+    public PostCommentResDto getPost(long postId) {
+
+        Post curPost = findById(postId);
+
+        List<Comment> comments = commentRepository.findAllByPostId(postId);
+
+        List<CommentResDto> commentResDtos = new ArrayList<>();
+        for (Comment comment : comments) {
+            commentResDtos.add(new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment(), comment.getCreatedAt()));
+        }
+
+        return new PostCommentResDto(commentResDtos, curPost);
     }
 
     public Post findById(long id) {
