@@ -9,11 +9,13 @@ import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.enums.user.Auth;
 import com.sparta.storyindays.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostService postService;
+    private final MessageSource messageSource;
 
     @Transactional
     public CommentResDto createComment(long postId, CommentCreateReqDto reqDto, User user) {
@@ -50,7 +53,12 @@ public class CommentService {
         String commentUsername = comment.getUser().getUsername();
 
         if (!loginUsername.equals(commentUsername)) {
-            throw new IllegalArgumentException("댓글 작성자와 현재 사용자가 불일치합니다.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    "author.and.user.mismatch",
+                    null,
+                    "User Mismatch",
+                    Locale.getDefault()
+            ));
         }
 
         comment.updateComment(reqDto.getComment());
@@ -67,7 +75,12 @@ public class CommentService {
         String commentUsername = comment.getUser().getUsername();
 
         if (!loginUsername.equals(commentUsername)) {
-            throw new IllegalArgumentException("댓글 작성자와 현재 사용자가 불일치합니다.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    "author.and.user.mismatch",
+                    null,
+                    "User Mismatch",
+                    Locale.getDefault()
+            ));
         }
         commentRepository.delete(comment);
     }
@@ -79,7 +92,12 @@ public class CommentService {
         Auth loginAuth = user.getAuth();
 
         if (!loginAuth.equals(Auth.ADMIN)) {
-            throw new IllegalArgumentException("관리자만 수정 가능합니다.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    "only.admin.can.edit",
+                    null,
+                    "Only Admin Can Edit",
+                    Locale.getDefault()
+            ));
         }
 
         comment.updateComment(reqDto.getComment());
@@ -95,7 +113,12 @@ public class CommentService {
         Auth loginAuth = user.getAuth();
 
         if (!loginAuth.equals(Auth.ADMIN)) {
-            throw new IllegalArgumentException("관리자만 삭제 가능합니다.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    "only.admin.can.delete",
+                    null,
+                    "Only Admin Can Delete",
+                    Locale.getDefault()
+            ));
         }
         commentRepository.delete(comment);
     }
@@ -103,7 +126,12 @@ public class CommentService {
     public Comment findComment(long commentId) {
 
         return commentRepository.findById(commentId).orElseThrow(
-                () -> new IllegalArgumentException("해당 ID에 맞는 댓글이 없습니다."));
+                () -> new IllegalArgumentException(messageSource.getMessage(
+                        "not.found.commentid",
+                        null,
+                        "Not Found CommentId",
+                        Locale.getDefault()
+                )));
     }
 
 

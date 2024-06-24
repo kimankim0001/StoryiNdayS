@@ -5,9 +5,11 @@ import com.sparta.storyindays.entity.PostLike;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.repository.PostLikeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -16,6 +18,7 @@ public class PostLikeService {
 
     private final PostLikeRepository postLikeRepository;
     private final PostService postService;
+    private final MessageSource messageSource;
 
     @Transactional
     public void addPostLike(long postId, User user) {
@@ -40,7 +43,12 @@ public class PostLikeService {
         if (!postLike.isEmpty()) {
             postLike.get().updatePostLike(false);
         } else {
-            throw new IllegalArgumentException("해당 게시글 좋아요를 누른적이 없습니다.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    "never.liked.post",
+                    null,
+                    "Never Liked Post",
+                    Locale.getDefault()
+            ));
         }
     }
 }
