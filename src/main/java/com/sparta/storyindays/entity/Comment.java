@@ -18,8 +18,7 @@ public class Comment extends Timstamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "댓글 내용을 입력해 주세요.")
-    @Column(name = "comment")
+    @Column(name = "comment", nullable = false)
     private String comment;
 
     @ManyToOne

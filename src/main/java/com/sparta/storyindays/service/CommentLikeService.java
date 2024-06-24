@@ -6,9 +6,11 @@ import com.sparta.storyindays.entity.Post;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.repository.CommentLikeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -18,6 +20,7 @@ public class CommentLikeService {
     private final CommentLikeRepository commentLikeRepository;
     private final CommentService commentService;
     private final PostService postService;
+    private final MessageSource messageSource;
 
     @Transactional
     public void addCommentLike(long postId, long commentId, User user) {
@@ -44,7 +47,12 @@ public class CommentLikeService {
         if (!commentLike.isEmpty()) {
             commentLike.get().updateCommentLike(false);
         } else {
-            throw new IllegalArgumentException("해당 댓글 좋아요를 누른적이 없습니다.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    "never.liked.comment",
+                    null,
+                    "Never Liked Comment",
+                    Locale.getDefault()
+            ));
         }
 
     }
