@@ -52,7 +52,6 @@ public class FollowService {
         return followRepository.findAllByFollowUserId(userName);
     }
 
-    @Transactional
     public boolean isAleadyFollow(long followeeId, User user) {
         User followeeUser = userService.findById(followeeId);
         Optional<Follow> curFollow = followRepository.findByFollowUserIdAndFolloweeUser(user.getUsername(), followeeUser);
