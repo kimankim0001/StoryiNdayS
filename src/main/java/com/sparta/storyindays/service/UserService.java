@@ -78,14 +78,16 @@ public class UserService {
     // 비밀번호 변경
     @Transactional
     public void updatePassword(Long userId, PasswordUpdateReqDto passwordUpdateReqDto) {
+
+        User user = findById(userId);
         User currentUser = getCurrentUser();
+        String currentPassword = passwordUpdateReqDto.getCurrentPassword();
+        String newPassword = passwordUpdateReqDto.getNewPassword();
+
+        // 현재 로그인한 계정이 맞는지 검증
         if (!currentUser.getId().equals(userId)) {
             throw new IllegalArgumentException("본인의 비밀번호만 변경 할 수 있습니다.");
         }
-
-        User user = findById(userId);
-        String currentPassword = passwordUpdateReqDto.getCurrentPassword();
-        String newPassword = passwordUpdateReqDto.getNewPassword();
 
         // 현재 비밀번호가 사용자의 비밀번호와 맞는지 검증
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
