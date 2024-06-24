@@ -59,6 +59,6 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return user.getState() == State.ACTIVATION;
+        return user.getState() == State.ACTIVATION || user.getState() == State.BLOCK;
     }
 }

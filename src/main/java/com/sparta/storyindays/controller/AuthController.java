@@ -59,8 +59,9 @@ public class AuthController {
 
         log.info("카카오 토큰 반환 완료");
         String kakaoAccessToken = jwtProvider.getJwtFromHeader(request,JwtConfig.KAKAO_TOKEN_HEADER);
-        String accessToken = authService.kakaoLogin(kakaoAccessToken);
-        response.addHeader(JwtConfig.AUTHORIZATION_HEADER,accessToken);
+        List<String> tokens = authService.kakaoLogin(kakaoAccessToken);
+        response.addHeader(JwtConfig.ACCESS_TOKEN_HEADER, tokens.get(0));
+        response.addHeader(JwtConfig.REFRESH_TOKEN_HEADER,tokens.get(1));
 
         CommonResDto resDto = new CommonResDto(HttpStatus.OK.value(), "로그인이 완료되었습니다 !", null);
         return ResponseEntity.ok().body(resDto);

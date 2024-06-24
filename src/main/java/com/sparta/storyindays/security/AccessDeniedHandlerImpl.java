@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -38,12 +39,6 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
 
         accessToken = jwtProvider.substringToken(accessToken);
         Claims claims = jwtProvider.getUserInfoFromToken(accessToken);
-        String state = claims.get(JwtConfig.USER_STATE_KEY, String.class);
-
-        if (State.BLOCK.getState().equals(state)) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN); //403
-            resDto = new ExceptionResDto(HttpServletResponse.SC_FORBIDDEN, accessDeniedException.getMessage());
-        }
 
         String auth = claims.get(JwtConfig.AUTHORIZATION_KEY, String.class);
 
@@ -55,5 +50,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
         response.getWriter().write(new ObjectMapper().writeValueAsString(resDto));
+
+        SecurityContextHolder.clearContext();
     }
 }
