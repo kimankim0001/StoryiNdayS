@@ -13,6 +13,7 @@ import com.sparta.storyindays.repository.CommentRepository;
 import com.sparta.storyindays.repository.PostRepository;
 import com.sparta.storyindays.util.Utils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +32,7 @@ public class PostService {
     private final UserService userService;
     private final FollowService followService;
     private final CommentRepository commentRepository;
+    private final MessageSource messageSource;
 
     public PostResDto writePost(PostReqDto reqDto, User user) {
 
@@ -73,7 +76,12 @@ public class PostService {
 
         Post post = findById(postId);
         if (!post.getUser().getUsername().equals(curUser.getUsername())) {
-            throw new BusinessLogicException("본인이 작성한 게시글만 수정할 수 있습니다");
+            throw new BusinessLogicException(messageSource.getMessage(
+                    "only.account.can.post.option",
+                    new String[]{"수정"},
+                    "Wrong Request",
+                    Locale.getDefault()
+            ));
         }
 
         post.update(reqDto);
@@ -86,10 +94,20 @@ public class PostService {
 
         Post post = findById(postId);
         if (!post.getUser().getUsername().equals(curUser.getUsername())) {
-            throw new BusinessLogicException("본인이 작성한 게시글만 삭제할 수 있습니다");
+            throw new BusinessLogicException(messageSource.getMessage(
+                    "only.account.can.post.option",
+                    new String[]{"삭제"},
+                    "Wrong Request",
+                    Locale.getDefault()
+            ));
         }
         if (post.getUser().getAuth().equals(Auth.USER) && post.getPostType().equals(PostType.NOTICE)) {
-            throw new BusinessLogicException("공지는 관리자만 삭제할 수 있습니다");
+            throw new BusinessLogicException(messageSource.getMessage(
+                    "only.admin.can.delete",
+                    null,
+                    "Wrong Request",
+                    Locale.getDefault()
+            ));
         }
         postRepository.delete(post);
     }
@@ -164,6 +182,11 @@ public class PostService {
 
     public Post findById(long id) {
         return postRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않는 게시글 입니다"));
+                new IllegalArgumentException(messageSource.getMessage(
+                        "no.exist.post",
+                        null,
+                        "Wrong Request",
+                        Locale.getDefault()
+                )));
     }
 }
