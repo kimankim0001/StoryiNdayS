@@ -95,7 +95,7 @@ public class PostService {
         Post post = findById(postId);
         if (!post.getUser().getUsername().equals(curUser.getUsername())) {
             throw new BusinessLogicException(messageSource.getMessage(
-                    "only.account.can.post.option",
+                    "only.myaccount.can.post.option",
                     new String[]{"삭제"},
                     "Wrong Request",
                     Locale.getDefault()
