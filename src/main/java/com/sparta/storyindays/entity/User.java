@@ -43,7 +43,7 @@ public class User extends Timstamped {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "kakao_id", nullable = false)
+    @Column(name = "kakao_id", nullable = true)
     private Long kakaoId;
 
     public User(String username, String password, String name, Auth auth, String email) {
