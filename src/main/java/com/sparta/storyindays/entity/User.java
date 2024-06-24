@@ -43,12 +43,24 @@ public class User extends Timstamped {
     @Column(name = "email", nullable = false)
     private String email;
 
+    @Column(name = "kakao_id", nullable = false)
+    private Long kakaoId;
+
     public User(String username, String password, String name, Auth auth, String email) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.auth = auth;
         this.email = email;
+    }
+
+    public User(String username, String password, String email, Auth auth, Long kakaoId) {
+        this.username = email;
+        this.name = username;
+        this.password = password;
+        this.auth = auth;
+        this.email = email;
+        this.kakaoId = kakaoId;
     }
 
     public void updateRefreshToken(String refreshToken) {
@@ -70,5 +82,10 @@ public class User extends Timstamped {
 
     public void stateUpdate(State state) {
         this.state = state;
+    }
+
+    public User kakaoIdUpdate(Long kakaoId) {
+        this.kakaoId = kakaoId;
+        return this;
     }
 }

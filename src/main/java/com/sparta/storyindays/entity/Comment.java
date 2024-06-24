@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Table(name = "comment")
@@ -16,6 +19,7 @@ public class Comment extends Timstamped {
     private Long id;
 
     @NotNull(message = "댓글 내용을 입력해 주세요.")
+    @Column(name = "comment")
     private String comment;
 
     @ManyToOne
@@ -25,6 +29,9 @@ public class Comment extends Timstamped {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private final List<CommentLike> commentLikeList = new ArrayList<>();
 
     public Comment(String comment, Post post, User user) {
         this.comment = comment;
