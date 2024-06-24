@@ -19,6 +19,7 @@ public class FollowService {
     private final FollowRepository followRepository;
     private final UserService userService;
 
+    @Transactional
     public ProfileUpdateResDto followUser(long followeeId, User user) {
 
         User followeeUser = userService.findById(followeeId);
