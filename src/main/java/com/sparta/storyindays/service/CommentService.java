@@ -27,7 +27,7 @@ public class CommentService {
 
         Post post = postService.findById(postId);
         Comment comment = commentRepository.save(new Comment(reqDto.getComment(), post, user));
-        return new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment());
+        return new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment(), comment.getCreatedAt());
     }
 
     public List<CommentResDto> getAllComment(long postId) {
@@ -36,7 +36,7 @@ public class CommentService {
         List<Comment> comments = commentRepository.findAllByPostId(postId);
         List<CommentResDto> commentResDtos = new ArrayList<>();
         for (Comment comment : comments) {
-            commentResDtos.add(new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment()));
+            commentResDtos.add(new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment(), comment.getCreatedAt()));
         }
         return commentResDtos;
     }
@@ -55,7 +55,7 @@ public class CommentService {
 
         comment.updateComment(reqDto.getComment());
 
-        return new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment());
+        return new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment(), comment.getCreatedAt());
     }
 
     @Transactional
@@ -84,7 +84,7 @@ public class CommentService {
 
         comment.updateComment(reqDto.getComment());
 
-        return new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment());
+        return new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment(), comment.getCreatedAt());
     }
 
     @Transactional

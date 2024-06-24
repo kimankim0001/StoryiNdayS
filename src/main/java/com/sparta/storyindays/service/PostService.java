@@ -156,7 +156,7 @@ public class PostService {
 
         List<CommentResDto> commentResDtos = new ArrayList<>();
         for (Comment comment : comments) {
-            commentResDtos.add(new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment()));
+            commentResDtos.add(new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment(), comment.getCreatedAt()));
         }
 
         return new PostCommentResDto(commentResDtos, curPost);
