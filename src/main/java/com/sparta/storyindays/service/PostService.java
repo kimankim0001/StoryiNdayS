@@ -126,8 +126,6 @@ public class PostService {
 
     public Page<PostUpdateResDto> getFollowPost(int page, boolean isAsc, User user) {
 
-        Pageable pageable = Utils.getPageable(page, isAsc);
-
         List<Follow> followeeList = followService.getFolloweeList(user.getUsername());
         List<Post> postList = new ArrayList<>();
         for (Follow follow : followeeList) {
@@ -140,6 +138,7 @@ public class PostService {
                 postList.stream().sorted(Comparator.comparing(Post::getCreatedAt).reversed()).toList() :
                 postList.stream().sorted(Comparator.comparing(Post::getCreatedAt)).toList();
 
+        Pageable pageable = Utils.getPageable(page, isAsc);
 
         Page<Post> pagingList = Utils.getCustomPage(pageable, sortedPostList);
         return pagingList.map(PostUpdateResDto::new);
