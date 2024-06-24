@@ -1,8 +1,8 @@
 package com.sparta.storyindays.util;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+
+import java.util.List;
 
 public class Utils {
     public static Pageable getPageable(int page, boolean isAsc) {
@@ -12,5 +12,12 @@ public class Utils {
         Pageable pageable = PageRequest.of(page, 5, sort);
 
         return pageable;
+    }
+
+    public static <T> Page<T> getCustomPage(Pageable pageable, List<T> pagedList) {
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), pagedList.size());
+        Page<T> pagingList = new PageImpl<>(pagedList.subList(start, end), pageable, pagedList.size());
+        return pagingList;
     }
 }

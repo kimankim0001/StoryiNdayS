@@ -1,10 +1,7 @@
 package com.sparta.storyindays.service;
 
 import com.sparta.storyindays.dto.user.*;
-import com.sparta.storyindays.dto.user.admin.AdminAuthReqDto;
-import com.sparta.storyindays.dto.user.admin.AdminAuthResDto;
-import com.sparta.storyindays.dto.user.admin.AdminStateReqDto;
-import com.sparta.storyindays.dto.user.admin.AdminStateResDto;
+import com.sparta.storyindays.dto.user.admin.*;
 import com.sparta.storyindays.entity.PasswordHistory;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.enums.user.Auth;
@@ -13,6 +10,12 @@ import com.sparta.storyindays.repository.PasswordHistoryRepository;
 import com.sparta.storyindays.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +39,19 @@ public class UserService {
     // 프로필 수정
     @Transactional
     public ProfileUpdateResDto updateProfile(Long userId, ProfileUpdateReqDto profileUpdateReqDto) {
+        User currentUser = getCurrentUser();
+        if (!currentUser.getId().equals(userId)) {
+            throw new IllegalArgumentException("본인의 프로필만 수정할 수 있습니다.");
+        }
+
+        User user = findById(userId);
+        user.update(profileUpdateReqDto);
+        return new ProfileUpdateResDto(user);
+    }
+
+    // 회원 정보 수정
+    @Transactional
+    public ProfileUpdateResDto adminUpdateProfile(Long userId, ProfileUpdateReqDto profileUpdateReqDto) {
         User user = findById(userId);
         user.update(profileUpdateReqDto);
         return new ProfileUpdateResDto(user);
@@ -77,7 +93,7 @@ public class UserService {
         }
 
         // 변경할 비밀번호가 최근에 바꾼 적 있는 비밀번호인지 검증
-        List<PasswordHistory> recentPasswords = passwordHistoryRepository.findTop3ByUserOrderByChangedAtDesc(user);
+        List<PasswordHistory> recentPasswords = passwordHistoryRepository.findTop4ByUserOrderByCreatedAtDesc(user);
         for (PasswordHistory passwordHistory : recentPasswords) {
             if (passwordEncoder.matches(passwordUpdateReqDto.getNewPassword(), passwordHistory.getPassword())) {
                 throw new IllegalArgumentException("새로운 비밀번호는 최근 사용한 비밀번호와 동일할 수 없습니다.");
@@ -93,9 +109,9 @@ public class UserService {
         newHistory.setPassword(user.getPassword());
         passwordHistoryRepository.save(newHistory);
 
-        // 비밀번호 히스토리가 3개를 초과할 경우 가장 오래된 히스토리 삭제
-        List<PasswordHistory> allPasswords = passwordHistoryRepository.findAllByUserOrderByChangedAtAsc(user);
-        if (allPasswords.size() > 3) {
+        // 비밀번호 히스토리가 4개를 초과할 경우 가장 오래된 히스토리 삭제
+        List<PasswordHistory> allPasswords = passwordHistoryRepository.findAllByUserOrderByCreatedAtAsc(user);
+        if (allPasswords.size() > 4) {
             PasswordHistory oldestHistory = allPasswords.get(0);
             passwordHistoryRepository.delete(oldestHistory);
         }
@@ -110,5 +126,22 @@ public class UserService {
     public User findByUserName(String userName) {
         return userRepository.findByUsername(userName).orElseThrow(() ->
                 new IllegalArgumentException("해당 사용자는 존재하지 않습니다"));
+    }
+
+    private User getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("현재 사용자를 찾을 수 없습니다."));
+    }
+
+    public Page<AdminUsersResDto> getAllUserProfile(int page, int size, String sortBy, boolean isAsc) {
+        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sort = Sort.by(direction,sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<User> userList;
+        userList = userRepository.findAll(pageable);
+
+        return userList.map(AdminUsersResDto::new);
     }
 }

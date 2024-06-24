@@ -1,5 +1,6 @@
 package com.sparta.storyindays.security;
 
+import com.sparta.storyindays.enums.user.Auth;
 import com.sparta.storyindays.enums.user.State;
 import com.sparta.storyindays.entity.User;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,13 +19,13 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        State userState = user.getState();
-        String state = userState.getState();
+        Auth userAuth = user.getAuth();
+        String auth = userAuth.getUser();
 
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(state);
-        Collection<GrantedAuthority> states = new ArrayList<>();
-        states.add(simpleGrantedAuthority);
-        return states;
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(auth);
+        Collection<GrantedAuthority> auths = new ArrayList<>();
+        auths.add(simpleGrantedAuthority);
+        return auths;
     }
 
     public User getUser() {
