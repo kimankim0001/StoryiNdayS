@@ -127,3 +127,6 @@ https://www.notion.so/teamsparta/Code-Convention-78154a39fefd40e39c99f2f7a22b898
 
 ### 깃헙 룰
 https://www.notion.so/teamsparta/Github-Rules-7c920f21d612400e9d0bced04058bffe
+
+### API docs
+https://documenter.getpostman.com/view/34881408/2sA3XY7JAd
