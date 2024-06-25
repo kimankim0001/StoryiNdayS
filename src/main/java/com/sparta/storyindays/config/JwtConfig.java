@@ -24,6 +24,7 @@ public class JwtConfig {
     public static final String REFRESH_TOKEN_HEADER = "refreshToken";
     public static final String KAKAO_TOKEN_HEADER = "kakaoAccessToken";
     public static final String EXPIRED_TOKEN = "expiredToken";
+    public static final String BLOCKED_USER = "blockedUser";
     public static final String AUTHORIZATION_KEY = "auth";
     public static final String USER_STATE_KEY = "state";
     public static final String BEARER_PREFIX = "Bearer ";

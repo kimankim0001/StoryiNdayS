@@ -54,6 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (State.BLOCK.getState().equals(userState)) {
             log.info("차단된 사용자");
+            req.setAttribute(JwtConfig.BLOCKED_USER,true);
             throw new AccessDeniedException("차단되어서 해당 사이트에 접근하실 수 없습니다.");
         }
         setAuthentication(userInfo.getSubject());
