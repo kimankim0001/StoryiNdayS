@@ -33,11 +33,11 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
         String accessToken = jwtProvider.getJwtFromHeader(request, JwtConfig.AUTHORIZATION_HEADER);
 
         response.setStatus(HttpServletResponse.SC_FORBIDDEN); //403
-        ExceptionResDto resDto = new ExceptionResDto(HttpServletResponse.SC_FORBIDDEN, authException.getMessage());
+        ExceptionResDto resDto = new ExceptionResDto(HttpServletResponse.SC_FORBIDDEN, "유효하지 않은 사용자입니다.");
 
         if (!StringUtils.hasText(accessToken)) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN); //403
-            resDto = new ExceptionResDto(HttpServletResponse.SC_FORBIDDEN, authException.getMessage());
+            resDto = new ExceptionResDto(HttpServletResponse.SC_FORBIDDEN, "로그인 후 사용 가능한 기능입니다.");
         }
 
         accessToken = jwtProvider.substringToken(accessToken);
@@ -53,7 +53,6 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); //401
             resDto = new ExceptionResDto(HttpServletResponse.SC_UNAUTHORIZED, "만료된 accessToken 토큰입니다.");
         }
-
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
