@@ -105,6 +105,7 @@ public class PostService {
         return postReqDto;
     }
 
+    @Transactional
     public PostUpdateResDto updatePostByAdmin(long postId, PostReqDto reqDto) {
 
         Post post = findById(postId);

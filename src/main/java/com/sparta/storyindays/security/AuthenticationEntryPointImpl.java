@@ -30,28 +30,17 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException{
         log.info("인증 예외 처리");
 
-        String accessToken = jwtProvider.getJwtFromHeader(request, JwtConfig.AUTHORIZATION_HEADER);
+        ExceptionResDto resDto;
 
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN); //403
-        ExceptionResDto resDto = new ExceptionResDto(HttpServletResponse.SC_FORBIDDEN, "유효하지 않은 사용자입니다.");
-
-        if (!StringUtils.hasText(accessToken)) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN); //403
-            resDto = new ExceptionResDto(HttpServletResponse.SC_FORBIDDEN, "로그인 후 사용 가능한 기능입니다.");
-        }
-
-        accessToken = jwtProvider.substringToken(accessToken);
-        Claims claims = jwtProvider.getUserInfoFromToken(accessToken);
-        String state = claims.get(JwtConfig.USER_STATE_KEY, String.class);
-
-        if (State.BLOCK.getState().equals(state)) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN); //403
-            resDto = new ExceptionResDto(HttpServletResponse.SC_FORBIDDEN, "차단되어서 해당 사이트에 접근하실 수 없습니다.");
-        }
-
-        if(request.getAttribute(JwtConfig.EXPIRED_TOKEN) != null && (boolean) request.getAttribute(JwtConfig.EXPIRED_TOKEN)) {
+        if(request.getAttribute(JwtConfig.EXPIRED_TOKEN) != null && (boolean) request.getAttribute(JwtConfig.EXPIRED_TOKEN)){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); //401
             resDto = new ExceptionResDto(HttpServletResponse.SC_UNAUTHORIZED, "만료된 accessToken 토큰입니다.");
+        }else if(request.getAttribute(JwtConfig.BLOCKED_USER) != null && (boolean) request.getAttribute(JwtConfig.BLOCKED_USER)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN); //403
+            resDto = new ExceptionResDto(HttpServletResponse.SC_FORBIDDEN, "차단된 사용자입니다.");
+        }else{
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN); //403
+            resDto = new ExceptionResDto(HttpServletResponse.SC_FORBIDDEN, "인증되지 않은 사용자입니다.");
         }
 
         response.setContentType("application/json");
