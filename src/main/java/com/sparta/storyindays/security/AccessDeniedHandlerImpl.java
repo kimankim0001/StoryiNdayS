@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.storyindays.config.JwtConfig;
 import com.sparta.storyindays.dto.ExceptionResDto;
 import com.sparta.storyindays.enums.user.Auth;
-import com.sparta.storyindays.enums.user.State;
 import com.sparta.storyindays.jwt.JwtProvider;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.ServletException;
