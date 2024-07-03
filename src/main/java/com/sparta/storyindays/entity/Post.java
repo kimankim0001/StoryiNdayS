@@ -25,6 +25,9 @@ public class Post extends Timstamped {
     @Column(name = "contents", nullable = false, length = 255)
     private String contents;
 
+    @Column(name = "post_likes", nullable = false)
+    private Long postLikes;
+
     @Enumerated(value = EnumType.STRING)
     @Column(name = "post_type", nullable = false, length = 255)
     private PostType postType;
@@ -48,6 +51,7 @@ public class Post extends Timstamped {
         this.isPinned = b;
         this.postType = postType;
         this.user = user;
+        this.postLikes = 0L;
     }
 
     public void setPin(boolean isPinned) {
@@ -62,5 +66,13 @@ public class Post extends Timstamped {
     public void addComment(Comment comment) {
         this.commentList.add(comment);
         //comment에서 setPost해서 외래키 설정해야함
+    }
+
+    public void increasePostLikes() {
+        this.postLikes++;
+    }
+
+    public void decreasePostLikes() {
+        this.postLikes--;
     }
 }

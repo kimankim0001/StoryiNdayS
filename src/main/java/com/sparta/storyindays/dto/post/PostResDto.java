@@ -14,6 +14,8 @@ public class PostResDto {
 
     private String contents;
 
+    private Long postLikes;
+
     private LocalDateTime createAt;
 
     private boolean isPinned;
@@ -22,6 +24,7 @@ public class PostResDto {
         name = post.getUser().getName();
         title = post.getTitle();
         contents = post.getContents();
+        postLikes = post.getPostLikes();
         createAt = post.getCreatedAt();
         isPinned = post.getIsPinned();
     }

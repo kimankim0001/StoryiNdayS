@@ -189,4 +189,16 @@ public class PostService {
                         Locale.getDefault()
                 )));
     }
+
+    @Transactional
+    public void increasePostLikes(Long postId) {
+        Post post = findById(postId);
+        post.increasePostLikes();
+    }
+
+    @Transactional
+    public void decreasePostLikes(Long postId) {
+        Post post = findById(postId);
+        post.decreasePostLikes();
+    }
 }

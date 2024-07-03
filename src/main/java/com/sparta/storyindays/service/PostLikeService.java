@@ -4,7 +4,6 @@ import com.sparta.storyindays.entity.Post;
 import com.sparta.storyindays.entity.PostLike;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.repository.PostLikeRepository;
-import com.sparta.storyindays.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class PostLikeService {
             throw new IllegalArgumentException(messageSource.getMessage(
                     "no.liked.own.post",
                     null,
-                    "You can't click like button on your own posts",
+                    "You Can Not Click Like Button On Your Own Posts",
                     Locale.getDefault()
             ));
         }
@@ -38,26 +37,46 @@ public class PostLikeService {
         if (postLike.isEmpty()) {
             PostLike newPostLike = new PostLike(post, user, true);
             postLikeRepository.save(newPostLike);
+            postService.increasePostLikes(postId);
         } else {
-            postLike.get().updatePostLike(true);
+            if (postLike.get().isPostLike()) {
+                throw new IllegalArgumentException(messageSource.getMessage(
+                        "already.liked",
+                        null,
+                        "Already Liked This Post",
+                        Locale.getDefault()
+                ));
+            } else {
+                postLike.get().updatePostLike(true);
+                postService.increasePostLikes(postId);
+            }
         }
     }
 
     @Transactional
     public void cancelPostLike(long postId, User user) {
 
-        postService.findById(postId);
-
         Optional<PostLike> postLike = postLikeRepository.findByPostIdAndUser(postId, user);
-        if (!postLike.isEmpty()) {
-            postLike.get().updatePostLike(false);
-        } else {
+        if (postLike.isEmpty()) {
             throw new IllegalArgumentException(messageSource.getMessage(
                     "never.liked.post",
                     null,
                     "Never Liked Post",
                     Locale.getDefault()
             ));
+        } else {
+            if (postLike.get().isPostLike()) {
+                postLike.get().updatePostLike(false);
+                postService.decreasePostLikes(postId);
+            } else {
+                throw new IllegalArgumentException(messageSource.getMessage(
+                        "already.cancel.liked",
+                        null,
+                        "Already Cancel Liked This Post",
+                        Locale.getDefault()
+                ));
+            }
+
         }
     }
 }

@@ -19,6 +19,8 @@ public class PostUpdateResDto {
 
     private String contents;
 
+    private Long postLikes;
+
     private PostType postType;
 
     private Boolean isPinned;
@@ -31,6 +33,7 @@ public class PostUpdateResDto {
         name = post.getUser().getName();
         title = post.getTitle();
         contents = post.getContents();
+        postLikes = post.getPostLikes();
         postType = post.getPostType();
         isPinned = post.getIsPinned();
         createAt = post.getCreatedAt();
