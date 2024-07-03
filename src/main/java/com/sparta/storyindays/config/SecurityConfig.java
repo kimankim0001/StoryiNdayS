@@ -56,6 +56,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/posts/{userId}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/posts").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/posts/{postId}/comments/{commentId}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/reissuance").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/login/kakao").permitAll()
                         .requestMatchers("/api/admins/users/**").hasAuthority("ADMIN")
