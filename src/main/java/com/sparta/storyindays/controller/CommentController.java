@@ -2,6 +2,7 @@ package com.sparta.storyindays.controller;
 
 import com.sparta.storyindays.dto.CommonResDto;
 import com.sparta.storyindays.dto.comment.CommentCreateReqDto;
+import com.sparta.storyindays.dto.comment.CommentGetResDto;
 import com.sparta.storyindays.dto.comment.CommentResDto;
 import com.sparta.storyindays.dto.comment.CommentUpdateReqDto;
 import com.sparta.storyindays.security.UserDetailsImpl;
@@ -12,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -29,9 +28,9 @@ public class CommentController {
     }
 
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<CommonResDto<List<CommentResDto>>> getAllComment(@PathVariable(name = "postId") long postId) {
-        List<CommentResDto> resDto = commentService.getAllComment(postId);
-        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value(), "댓글 조회에 성공하였습니다!", resDto));
+    public ResponseEntity<CommonResDto<CommentGetResDto>> getAllComment(@PathVariable(name = "postId") long postId, @RequestParam("page") int page, @RequestParam("isAsc") boolean isAsc) {
+        CommentGetResDto commentGetResDto = commentService.getAllComment(postId, page - 1, isAsc);
+        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value(), "댓글 조회에 성공하였습니다!", commentGetResDto));
     }
 
     @PutMapping("/posts/{postId}/comments/{commentId}")

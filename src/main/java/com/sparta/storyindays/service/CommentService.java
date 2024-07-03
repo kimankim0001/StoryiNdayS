@@ -1,6 +1,7 @@
 package com.sparta.storyindays.service;
 
 import com.sparta.storyindays.dto.comment.CommentCreateReqDto;
+import com.sparta.storyindays.dto.comment.CommentGetResDto;
 import com.sparta.storyindays.dto.comment.CommentResDto;
 import com.sparta.storyindays.dto.comment.CommentUpdateReqDto;
 import com.sparta.storyindays.entity.Comment;
@@ -8,13 +9,13 @@ import com.sparta.storyindays.entity.Post;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.enums.user.Auth;
 import com.sparta.storyindays.repository.CommentRepository;
+import com.sparta.storyindays.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -33,15 +34,15 @@ public class CommentService {
         return new CommentResDto(comment);
     }
 
-    public List<CommentResDto> getAllComment(long postId) {
+    public CommentGetResDto getAllComment(long postId, int page, boolean isAsc) {
 
         postService.findById(postId);
-        List<Comment> comments = commentRepository.findAllByPostId(postId);
-        List<CommentResDto> commentResDtos = new ArrayList<>();
-        for (Comment comment : comments) {
-            commentResDtos.add(new CommentResDto(comment));
-        }
-        return commentResDtos;
+        Pageable pageable = Utils.getPageable(page, isAsc);
+
+        CommentGetResDto commentGetResDto = new CommentGetResDto(commentRepository.findAllByPostId(postId, pageable));
+
+        return commentGetResDto;
+
     }
 
     @Transactional
