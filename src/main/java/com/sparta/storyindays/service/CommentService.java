@@ -123,6 +123,15 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
+    public CommentResDto getComment(long postId, long commentId) {
+
+        postService.findById(postId);
+        Comment comment = findComment(commentId);
+
+        return new CommentResDto(comment.getId(), comment.getUser().getUsername(), comment.getComment(), comment.getCreatedAt());
+
+    }
+
     public Comment findComment(long commentId) {
 
         return commentRepository.findById(commentId).orElseThrow(

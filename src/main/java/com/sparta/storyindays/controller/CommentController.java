@@ -57,4 +57,10 @@ public class CommentController {
         commentService.deleteCommentAdmin(postId, commentId, userDetails.getUser());
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value(), "관리자 권한으로 댓글 삭제에 성공하였습니다!", null));
     }
+
+    @GetMapping("/posts/{postId}/comments/{commentId}")
+    public ResponseEntity<CommonResDto<CommentResDto>> getComment(@PathVariable(name = "postId") long postId, @PathVariable(name = "commentId") long commentId) {
+        CommentResDto resDto = commentService.getComment(postId, commentId);
+        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value(), "댓글 조회에 성공하였습니다!", resDto));
+    }
 }
