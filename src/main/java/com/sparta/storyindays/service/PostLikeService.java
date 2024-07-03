@@ -56,6 +56,8 @@ public class PostLikeService {
     @Transactional
     public void cancelPostLike(long postId, User user) {
 
+        postService.findById(postId);
+
         Optional<PostLike> postLike = postLikeRepository.findByPostIdAndUser(postId, user);
         if (postLike.isEmpty()) {
             throw new IllegalArgumentException(messageSource.getMessage(
