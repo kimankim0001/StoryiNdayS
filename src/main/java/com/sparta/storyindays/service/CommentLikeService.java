@@ -41,8 +41,19 @@ public class CommentLikeService {
         if (commentLike.isEmpty()) {
             CommentLike newCommentLike = new CommentLike(comment, post, user, true);
             commentLikeRepository.save(newCommentLike);
+            commentService.increaseCommentLikes(postId, commentId);
         } else {
-            commentLike.get().updateCommentLike(true);
+            if (commentLike.get().isCommentLike()) {
+                throw new IllegalArgumentException(messageSource.getMessage(
+                        "already.liked",
+                        null,
+                        "Already Liked This Comment",
+                        Locale.getDefault()
+                ));
+            } else {
+                commentLike.get().updateCommentLike(true);
+                commentService.increaseCommentLikes(postId, commentId);
+            }
         }
     }
 
@@ -53,15 +64,25 @@ public class CommentLikeService {
         commentService.findComment(commentId);
 
         Optional<CommentLike> commentLike = commentLikeRepository.findByPostIdAndCommentIdAndUser(postId, commentId, user);
-        if (!commentLike.isEmpty()) {
-            commentLike.get().updateCommentLike(false);
-        } else {
+        if (commentLike.isEmpty()) {
             throw new IllegalArgumentException(messageSource.getMessage(
                     "never.liked.comment",
                     null,
                     "Never Liked Comment",
                     Locale.getDefault()
             ));
+        } else {
+           if (commentLike.get().isCommentLike()) {
+               commentLike.get().updateCommentLike(false);
+               commentService.decreaseCommentLikes(postId, commentId);
+           } else {
+               throw new IllegalArgumentException(messageSource.getMessage(
+                       "already.cancel.liked",
+                       null,
+                       "Already Cancel Liked This Post",
+                       Locale.getDefault()
+               ));
+           }
         }
 
     }

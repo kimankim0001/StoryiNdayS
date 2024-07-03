@@ -1,7 +1,6 @@
 package com.sparta.storyindays.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +20,9 @@ public class Comment extends Timstamped {
     @Column(name = "comment", nullable = false)
     private String comment;
 
+    @Column(name = "comment_likes", nullable = false)
+    private Long commentLikes;
+
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
@@ -36,11 +38,18 @@ public class Comment extends Timstamped {
         this.comment = comment;
         this.post = post;
         this.user = user;
+        this.commentLikes = 0L;
     }
 
     public void updateComment(String comment) {
         this.comment = comment;
     }
 
+    public void increaseCommentLikes() {
+        commentLikes++;
+    }
 
+    public void decreaseCommentLikes() {
+        commentLikes--;
+    }
 }
