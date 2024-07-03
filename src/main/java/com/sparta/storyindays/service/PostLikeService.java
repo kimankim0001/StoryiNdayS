@@ -4,6 +4,7 @@ import com.sparta.storyindays.entity.Post;
 import com.sparta.storyindays.entity.PostLike;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.repository.PostLikeRepository;
+import com.sparta.storyindays.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,14 @@ public class PostLikeService {
     public void addPostLike(long postId, User user) {
 
         Post post = postService.findById(postId);
+        if (post.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    "no.liked.own.post",
+                    null,
+                    "You can't click like button on your own posts",
+                    Locale.getDefault()
+            ));
+        }
 
         Optional<PostLike> postLike = postLikeRepository.findByPostIdAndUser(postId, user);
         if (postLike.isEmpty()) {
