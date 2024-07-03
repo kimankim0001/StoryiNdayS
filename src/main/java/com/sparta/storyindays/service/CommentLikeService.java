@@ -28,6 +28,15 @@ public class CommentLikeService {
         Post post = postService.findById(postId);
         Comment comment = commentService.findComment(commentId);
 
+        if (comment.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    "no.liked.own.comment",
+                    null,
+                    "You can't click like button on your own comments",
+                    Locale.getDefault()
+            ));
+        }
+
         Optional<CommentLike> commentLike = commentLikeRepository.findByPostIdAndCommentIdAndUser(postId, commentId, user);
         if (commentLike.isEmpty()) {
             CommentLike newCommentLike = new CommentLike(comment, post, user, true);
