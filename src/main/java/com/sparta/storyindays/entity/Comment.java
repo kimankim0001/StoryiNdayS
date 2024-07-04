@@ -23,11 +23,11 @@ public class Comment extends Timstamped {
     @Column(name = "comment_likes", nullable = false)
     private Long commentLikes;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
