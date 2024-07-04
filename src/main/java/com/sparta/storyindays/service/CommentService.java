@@ -1,9 +1,6 @@
 package com.sparta.storyindays.service;
 
-import com.sparta.storyindays.dto.comment.CommentCreateReqDto;
-import com.sparta.storyindays.dto.comment.CommentGetResDto;
-import com.sparta.storyindays.dto.comment.CommentResDto;
-import com.sparta.storyindays.dto.comment.CommentUpdateReqDto;
+import com.sparta.storyindays.dto.comment.*;
 import com.sparta.storyindays.entity.Comment;
 import com.sparta.storyindays.entity.Post;
 import com.sparta.storyindays.entity.User;
@@ -12,11 +9,14 @@ import com.sparta.storyindays.repository.CommentRepository;
 import com.sparta.storyindays.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -131,6 +131,23 @@ public class CommentService {
 
         return new CommentResDto(comment);
 
+    }
+
+    public List<CommentLikeResDto> getLikesCommentWithPageAndSortDesc(User user, int page, int size){
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        return commentRepository.getLikesCommentWithPageAndSortDesc(user, pageRequest.getOffset(), pageRequest.getPageSize())
+                .stream()
+                .map(comment ->
+                        CommentLikeResDto.builder()
+                                .commentId(comment.getId())
+                                .username(comment.getUser().getUsername())
+                                .comment(comment.getComment())
+                                .commentLikes(comment.getCommentLikes())
+                                .createdAt(comment.getCreatedAt())
+                                .build())
+                .collect(Collectors.toList());
     }
 
     @Transactional

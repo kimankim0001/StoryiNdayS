@@ -1,10 +1,7 @@
 package com.sparta.storyindays.controller;
 
 import com.sparta.storyindays.dto.CommonResDto;
-import com.sparta.storyindays.dto.comment.CommentCreateReqDto;
-import com.sparta.storyindays.dto.comment.CommentGetResDto;
-import com.sparta.storyindays.dto.comment.CommentResDto;
-import com.sparta.storyindays.dto.comment.CommentUpdateReqDto;
+import com.sparta.storyindays.dto.comment.*;
 import com.sparta.storyindays.security.UserDetailsImpl;
 import com.sparta.storyindays.service.CommentService;
 import jakarta.validation.Valid;
@@ -13,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -61,5 +60,11 @@ public class CommentController {
     public ResponseEntity<CommonResDto<CommentResDto>> getComment(@PathVariable(name = "postId") long postId, @PathVariable(name = "commentId") long commentId) {
         CommentResDto resDto = commentService.getComment(postId, commentId);
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value(), "댓글 조회에 성공하였습니다!", resDto));
+    }
+
+    @GetMapping("/comment/likes")
+    public ResponseEntity<CommonResDto<List<CommentLikeResDto>>> getLikesCommentWithPageAndSortDesc(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam("page") int page) {
+        List<CommentLikeResDto> commentLikeResDtos = commentService.getLikesCommentWithPageAndSortDesc(userDetails.getUser(), page, 5);
+        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value(), "좋아요한 댓글 조회에 성공하였습니다!", commentLikeResDtos));
     }
 }
