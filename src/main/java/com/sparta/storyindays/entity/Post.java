@@ -35,7 +35,7 @@ public class Post extends Timstamped {
     @Column(name = "is_pinned", nullable = false)
     private Boolean isPinned;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
