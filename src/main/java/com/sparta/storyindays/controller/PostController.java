@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j(topic = "컨트롤러단")
 @RestController
 @RequestMapping("/api")
@@ -131,5 +133,14 @@ public class PostController {
         return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
                 , "팔로워한 유저들의 게시글 조회에 성공했습니다!"
                 , updateResDtoList));
+    }
+
+    @GetMapping("/posts/likes")
+    public ResponseEntity<CommonResDto<List<PostLikeResDto>>> getLikePost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam("page") int page) {
+
+        List<PostLikeResDto> postLikeResDtos = postService.getLikesPostWithPageAndSortDesc(userDetails.getUser(), page, 5);
+        return ResponseEntity.ok().body(new CommonResDto<>(HttpStatus.OK.value()
+                , "좋아요한 게시글 조회에 성공했습니다!"
+                , postLikeResDtos));
     }
 }

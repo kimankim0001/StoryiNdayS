@@ -15,6 +15,7 @@ import com.sparta.storyindays.util.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -164,6 +166,23 @@ public class PostService {
 
         Page<Post> pagingList = Utils.getCustomPage(pageable, sortedPostList);
         return pagingList.map(PostUpdateResDto::new);
+    }
+
+    public List<PostLikeResDto> getLikesPostWithPageAndSortDesc(User user, int page, int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        return postRepository.getLikesPostWithPageAndSortDesc(user, pageRequest.getOffset(), pageRequest.getPageSize())
+                .stream()
+                .map(post ->
+                        PostLikeResDto.builder()
+                                .name(post.getUser().getName())
+                                .title(post.getTitle())
+                                .contents(post.getContents())
+                                .postLikes(post.getPostLikes())
+                                .modifiedAt(post.getModifiedAt())
+                                .build())
+                .collect(Collectors.toList());
     }
 
     public PostCommentResDto getPost(long postId) {
