@@ -7,6 +7,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -46,12 +49,33 @@ public class User extends Timstamped {
     @Column(name = "kakao_id", nullable = true)
     private Long kakaoId;
 
+    @Column(name = "post_likes", nullable = false)
+    private Long postLikes;
+
+    @Column(name = "comment_likes", nullable = false)
+    private Long commentLikes;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private final List<Post> postList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private final List<Comment> commentList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private final List<PostLike> postLikeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private final List<CommentLike> commentLikeList = new ArrayList<>();
+
+
     public User(String username, String password, String name, Auth auth, String email) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.auth = auth;
         this.email = email;
+        this.postLikes = 0L;
+        this.commentLikes = 0L;
     }
 
     public User(String username, String password, String email, Auth auth, Long kakaoId) {
@@ -61,6 +85,8 @@ public class User extends Timstamped {
         this.auth = auth;
         this.email = email;
         this.kakaoId = kakaoId;
+        this.postLikes = 0L;
+        this.commentLikes = 0L;
     }
 
     public void updateRefreshToken(String refreshToken) {

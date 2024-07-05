@@ -3,6 +3,7 @@ package com.sparta.storyindays.dto.user;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.enums.user.Auth;
 import com.sparta.storyindays.enums.user.State;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,8 +17,11 @@ public class ProfileResDto {
     private String instroduction;
     private Auth auth;
     private State state;
+    private Long postLikes;
+    private Long commentLikes;
 
-    public ProfileResDto(User user) {
+    @Builder
+    public ProfileResDto(User user, Long postLikes, Long commentLikes) {
         this.id = user.getId();
         this.name = user.getName();
         this.username = user.getUsername();
@@ -25,5 +29,7 @@ public class ProfileResDto {
         this.instroduction = user.getIntroduction();
         this.auth = user.getAuth();
         this.state = user.getState();
+        this.postLikes = postLikes;
+        this.commentLikes = commentLikes;
     }
 }

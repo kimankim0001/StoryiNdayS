@@ -6,7 +6,9 @@ import com.sparta.storyindays.entity.PasswordHistory;
 import com.sparta.storyindays.entity.User;
 import com.sparta.storyindays.enums.user.Auth;
 import com.sparta.storyindays.enums.user.State;
+import com.sparta.storyindays.repository.CommentLikeRepository;
 import com.sparta.storyindays.repository.PasswordHistoryRepository;
+import com.sparta.storyindays.repository.PostLikeRepository;
 import com.sparta.storyindays.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,12 +33,18 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final PasswordHistoryRepository passwordHistoryRepository;
     private final MessageSource messageSource;
+    private final PostLikeRepository postLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
+
 
     // 프로필 조회
     public ProfileResDto getProfile(Long userId) {
         User user = findById(userId);
-        ProfileResDto profileResDto = new ProfileResDto(user);
-        return profileResDto;
+
+        long postLikes = postLikeRepository.countPostLikesByUserId(userId);
+        long commentLikes = commentLikeRepository.countCommentLikeByUserId(userId);
+
+        return new ProfileResDto(user, postLikes, commentLikes);
     }
 
     // 프로필 수정
